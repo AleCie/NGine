@@ -116,13 +116,13 @@ void Camera::MouseLook(GLFWwindow* window, float dt, int windowWidth, int window
 	HorizontalAngle += MouseSpeed * float(windowWidth / 2 - xpos);
 	VerticalAngle += MouseSpeed * float(windowHeight / 2 - ypos);
 
-	if (VerticalAngle > 90)
+	if (VerticalAngle > 1.5708) //90 deg in rads
 	{
-		VerticalAngle = 90;
+		VerticalAngle = 1.5708;
 	}
-	if (VerticalAngle < -90)
+	if (VerticalAngle < -1.5708)
 	{
-		VerticalAngle = -90;
+		VerticalAngle = -1.5708;
 	}
 }
 

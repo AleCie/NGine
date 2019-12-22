@@ -160,6 +160,8 @@ void Application::InitGLFW()
 	glfwMakeContextCurrent(Window.get());
 
 
+	glfwSwapInterval(1);
+
 	// Ensure we can capture the escape key being pressed below
 	glfwSetInputMode(Window.get(), GLFW_STICKY_KEYS, GL_TRUE);
 	// Hide the mouse and enable unlimited mouvement
@@ -206,7 +208,7 @@ void Application::InitOGL()
 	// Accept fragment if it closer to the camera than the former one
 	glDepthFunc(GL_LESS);
 	// Cull triangles which normal is not towards the camera
-	//glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 
 	glPolygonMode(GL_FRONT, GL_FILL);
 	glPolygonMode(GL_BACK, GL_LINE);
@@ -355,6 +357,66 @@ void Application::InitTestCode()
 				m.Indices.push_back(index + 1); m.Indices.push_back(index + 2); m.Indices.push_back(index + 3);
 				index += 4;
 
+				// bottom face
+				m.Vertices.push_back(1 + x); m.Vertices.push_back(y); m.Vertices.push_back(1 + z);
+				m.Vertices.push_back(1 + x); m.Vertices.push_back(y); m.Vertices.push_back(0 + z);
+				m.Vertices.push_back(0 + x); m.Vertices.push_back(y); m.Vertices.push_back(0 + z);
+				m.Vertices.push_back(0 + x); m.Vertices.push_back(y); m.Vertices.push_back(1 + z);
+
+				// bottom
+
+				m.Indices.push_back(index + 3); m.Indices.push_back(index + 1); m.Indices.push_back(index + 0);
+				m.Indices.push_back(index + 3); m.Indices.push_back(index + 2); m.Indices.push_back(index + 1);
+				index += 4;
+
+				// back face
+				m.Vertices.push_back(1 + x); m.Vertices.push_back(1 + y); m.Vertices.push_back(z);
+				m.Vertices.push_back(1 + x); m.Vertices.push_back(y); m.Vertices.push_back(z);
+				m.Vertices.push_back(0 + x); m.Vertices.push_back(y); m.Vertices.push_back(z);
+				m.Vertices.push_back(0 + x); m.Vertices.push_back(1 + y); m.Vertices.push_back(z);
+
+				// back
+
+				m.Indices.push_back(index + 0); m.Indices.push_back(index + 1); m.Indices.push_back(index + 3);
+				m.Indices.push_back(index + 1); m.Indices.push_back(index + 2); m.Indices.push_back(index + 3);
+				index += 4;
+
+				// front face
+				m.Vertices.push_back(1 + x); m.Vertices.push_back(1 + y); m.Vertices.push_back(z + 1);
+				m.Vertices.push_back(1 + x); m.Vertices.push_back(y); m.Vertices.push_back(z + 1);
+				m.Vertices.push_back(0 + x); m.Vertices.push_back(y); m.Vertices.push_back(z + 1);
+				m.Vertices.push_back(0 + x); m.Vertices.push_back(1 + y); m.Vertices.push_back(z + 1);
+
+				// front
+
+				m.Indices.push_back(index + 3); m.Indices.push_back(index + 1); m.Indices.push_back(index + 0);
+				m.Indices.push_back(index + 3); m.Indices.push_back(index + 2); m.Indices.push_back(index + 1);
+				index += 4;
+
+				// left face
+				m.Vertices.push_back(x); m.Vertices.push_back(1 + y); m.Vertices.push_back(z + 1);
+				m.Vertices.push_back(x); m.Vertices.push_back(y); m.Vertices.push_back(z + 1);
+				m.Vertices.push_back(x); m.Vertices.push_back(y); m.Vertices.push_back(z);
+				m.Vertices.push_back(x); m.Vertices.push_back(1 + y); m.Vertices.push_back(z);
+
+				// left
+
+				m.Indices.push_back(index + 3); m.Indices.push_back(index + 1); m.Indices.push_back(index + 0);
+				m.Indices.push_back(index + 3); m.Indices.push_back(index + 2); m.Indices.push_back(index + 1);
+				index += 4;
+
+				// right face
+				m.Vertices.push_back(x + 1); m.Vertices.push_back(1 + y); m.Vertices.push_back(z + 1);
+				m.Vertices.push_back(x + 1); m.Vertices.push_back(y); m.Vertices.push_back(z + 1);
+				m.Vertices.push_back(x + 1); m.Vertices.push_back(y); m.Vertices.push_back(z);
+				m.Vertices.push_back(x + 1); m.Vertices.push_back(1 + y); m.Vertices.push_back(z);
+
+				// right
+
+				m.Indices.push_back(index + 0); m.Indices.push_back(index + 1); m.Indices.push_back(index + 3);
+				m.Indices.push_back(index + 1); m.Indices.push_back(index + 2); m.Indices.push_back(index + 3);
+				index += 4;
+
 				/*m.Colors.push_back(1); m.Colors.push_back(0); m.Colors.push_back(0);
 				m.Colors.push_back(1); m.Colors.push_back(0); m.Colors.push_back(0);
 				m.Colors.push_back(1); m.Colors.push_back(0); m.Colors.push_back(0);
@@ -464,7 +526,7 @@ void Application::InitTestCode()
 	ColorShader = std::unique_ptr<Shader>(new Shader("Data//Shaders//color.v", "Data//Shaders//color.f"));
 	coordsMesh.Create(ColorShader.get());
 
-	MainCamera.SetSpeed(0.001f);
+	MainCamera.SetSpeed(0.1f);
 	MainCamera.SetPosition(glm::vec3(0, 0, 5));
 
 	
