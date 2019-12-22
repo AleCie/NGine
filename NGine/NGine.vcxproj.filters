@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Color.cpp" />
+    <ClCompile Include="glsl.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="FastNoiseSIMD\FastNoiseSIMD_sse41.cpp">
+      <Filter>FastNoiseSIMD</Filter>
+    </ClCompile>
+    <ClCompile Include="FastNoiseSIMD\FastNoiseSIMD.cpp">
+      <Filter>FastNoiseSIMD</Filter>
+    </ClCompile>
+    <ClCompile Include="FastNoiseSIMD\FastNoiseSIMD_avx2.cpp">
+      <Filter>FastNoiseSIMD</Filter>
+    </ClCompile>
+    <ClCompile Include="FastNoiseSIMD\FastNoiseSIMD_avx512.cpp">
+      <Filter>FastNoiseSIMD</Filter>
+    </ClCompile>
+    <ClCompile Include="FastNoiseSIMD\FastNoiseSIMD_internal.cpp">
+      <Filter>FastNoiseSIMD</Filter>
+    </ClCompile>
+    <ClCompile Include="FastNoiseSIMD\FastNoiseSIMD_neon.cpp">
+      <Filter>FastNoiseSIMD</Filter>
+    </ClCompile>
+    <ClCompile Include="FastNoiseSIMD\FastNoiseSIMD_sse2.cpp">
+      <Filter>FastNoiseSIMD</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui.cpp">
+      <Filter>IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_demo.cpp">
+      <Filter>IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_draw.cpp">
+      <Filter>IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_widgets.cpp">
+      <Filter>IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_impl_glfw.cpp">
+      <Filter>IMGUI\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_impl_opengl3.cpp">
+      <Filter>IMGUI\impl</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Application.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Color.h" />
+    <ClInclude Include="glsl.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="FastNoiseSIMD\FastNoiseSIMD.h">
+      <Filter>FastNoiseSIMD</Filter>
+    </ClInclude>
+    <ClInclude Include="FastNoiseSIMD\FastNoiseSIMD_internal.h">
+      <Filter>FastNoiseSIMD</Filter>
+    </ClInclude>
+    <ClInclude Include="imconfig.h">
+      <Filter>IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui.h">
+      <Filter>IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_internal.h">
+      <Filter>IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imstb_rectpack.h">
+      <Filter>IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imstb_textedit.h">
+      <Filter>IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imstb_truetype.h">
+      <Filter>IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_impl_opengl3.h">
+      <Filter>IMGUI\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_impl_glfw.h">
+      <Filter>IMGUI\impl</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="FastNoiseSIMD">
+      <UniqueIdentifier>{955ac350-65c3-4d8d-9a23-33c2635a7e56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IMGUI">
+      <UniqueIdentifier>{2ec4acf1-f9f9-436b-8c99-cfd0d7c6d9ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IMGUI\impl">
+      <UniqueIdentifier>{9c63cd99-8389-43e1-b0ac-b7176224876a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

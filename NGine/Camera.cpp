@@ -60,6 +60,11 @@ void Camera::CalculateDirections()
 		sin(VerticalAngle),
 		cos(VerticalAngle) * cos(HorizontalAngle)
 	);
+	/*Direction = glm::vec3(
+		sin(VerticalAngle) * cos(HorizontalAngle),
+		cos(VerticalAngle),
+		sin(VerticalAngle) * sin(HorizontalAngle)
+	);*/
 
 	// Right vector
 	Right = glm::vec3(
@@ -67,6 +72,12 @@ void Camera::CalculateDirections()
 		0,
 		cos(HorizontalAngle - 3.14f / 2.0f)
 	);
+
+	/*Right = glm::vec3(
+		cos(HorizontalAngle - 3.14f / 2.0f),
+		0,
+		sin(HorizontalAngle - 3.14f / 2.0f)
+	);*/
 
 	// Up vector
 	Up = glm::cross(Right, Direction);
@@ -102,8 +113,17 @@ void Camera::MouseLook(GLFWwindow* window, float dt, int windowWidth, int window
 	glfwSetCursorPos(window, windowWidth / 2, windowHeight / 2);
 
 	// Compute new orientation
-	HorizontalAngle -= MouseSpeed * float(windowWidth / 2 - xpos);
+	HorizontalAngle += MouseSpeed * float(windowWidth / 2 - xpos);
 	VerticalAngle += MouseSpeed * float(windowHeight / 2 - ypos);
+
+	if (VerticalAngle > 90)
+	{
+		VerticalAngle = 90;
+	}
+	if (VerticalAngle < -90)
+	{
+		VerticalAngle = -90;
+	}
 }
 
 void Camera::SetSpeed(float val)

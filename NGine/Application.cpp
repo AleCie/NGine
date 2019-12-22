@@ -6,12 +6,12 @@
 #include "glsl.h"
 
 Application::Application(int windowWidth, int windowHeight)
-	: MainCamera(90.0f, 4.0f / 3.0f, 0.1f, 1000.0f)
+	: MainCamera(60.0f, 4.0f / 3.0f, 0.1f, 1000.0f)
 {
 	WindowWidth = windowWidth;
 	WindowHeight = windowHeight;
 
-	BackgroundColor = Color(0, 0, 1, 1);
+	BackgroundColor = Color(0.25f, 0.5f, 1, 1);
 
 	DeltaTime = 0;
 	LastTime = 0;
@@ -71,17 +71,7 @@ void Application::ProcessInput()
 		MainCamera.MouseLook(Window.get(), DeltaTime, WindowWidth, WindowHeight);
 	}
 
-	if (glfwGetKey(Window.get(), GLFW_KEY_P))
-	{
-		IsMouseLookEnabled = false;
-		EnableCursor();
-	}
-
-	if (glfwGetKey(Window.get(), GLFW_KEY_O))
-	{
-		IsMouseLookEnabled = true;
-		DisableCursor();
-	}
+	
 
 }
 
@@ -186,6 +176,13 @@ void Application::InitGLFW()
 	};
 
 	glfwSetFramebufferSizeCallback(Window.get(), framebufferFunc);
+
+	auto keyFunc = [](GLFWwindow* w, int key, int scancode, int action, int mods)
+	{
+		static_cast<Application*>(glfwGetWindowUserPointer(w))->GLFWKeyCallback(w, key, scancode, action, mods);
+	};
+
+	glfwSetKeyCallback(Window.get(), keyFunc);
 }
 
 void Application::InitGLEW()
@@ -210,6 +207,9 @@ void Application::InitOGL()
 	glDepthFunc(GL_LESS);
 	// Cull triangles which normal is not towards the camera
 	//glEnable(GL_CULL_FACE);
+
+	glPolygonMode(GL_FRONT, GL_FILL);
+	glPolygonMode(GL_BACK, GL_LINE);
 }
 
 void Application::InitIMGUI()
@@ -236,6 +236,58 @@ void Application::GLFWFramebufferSizeCallback(GLFWwindow* window, int width, int
 	// make sure the viewport matches the new window dimensions; note that width and 
 	// height will be significantly larger than specified on retina displays.
 	glViewport(0, 0, width, height);
+}
+
+void Application::GLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	if (key == GLFW_KEY_I && action == GLFW_PRESS)
+	{
+		MainCamera.SetAngles(0, 3.14f);
+	}
+	if (key == GLFW_KEY_O && action == GLFW_PRESS)
+	{
+		IsMouseLookEnabled = !IsMouseLookEnabled;
+
+		if (IsMouseLookEnabled)
+		{
+			DisableCursor();
+		}
+		else
+		{
+			EnableCursor();
+		}
+	}
+	if (key == GLFW_KEY_P && action == GLFW_PRESS)
+	{
+		IsWireframeEnabled = !IsWireframeEnabled;
+
+		if (IsWireframeEnabled)
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			//glPolygonMode(GL_BACK, GL_LINE);
+		}
+		else
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}
+	}
+
+	/*if (glfwGetKey(Window.get(), GLFW_KEY_Q))
+	{
+		MainCamera.SetAngles(0, 3.14f);
+	}
+
+	if (glfwGetKey(Window.get(), GLFW_KEY_P))
+	{
+		IsMouseLookEnabled = false;
+		EnableCursor();
+	}
+
+	if (glfwGetKey(Window.get(), GLFW_KEY_O))
+	{
+		IsMouseLookEnabled = true;
+		DisableCursor();
+	}*/
 }
 
 void Application::CalculateDeltaTime()
@@ -283,6 +335,103 @@ void Application::InitTestCode()
 {
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
+	int size = 16;
+	int index = 0;
+	for (int x = 0; x < size; x++)
+	{
+		for (int y = 0; y < size; y++)
+		{
+			for (int z = 0; z < size; z++)
+			{
+				// top face
+				m.Vertices.push_back(1 + x); m.Vertices.push_back(1 + y); m.Vertices.push_back(1 + z);
+				m.Vertices.push_back(1 + x); m.Vertices.push_back(1 + y); m.Vertices.push_back(0 + z);
+				m.Vertices.push_back(0 + x); m.Vertices.push_back(1 + y); m.Vertices.push_back(0 + z);
+				m.Vertices.push_back(0 + x); m.Vertices.push_back(1 + y); m.Vertices.push_back(1 + z);
+
+				// top
+
+				m.Indices.push_back(index + 0); m.Indices.push_back(index + 1); m.Indices.push_back(index + 3);
+				m.Indices.push_back(index + 1); m.Indices.push_back(index + 2); m.Indices.push_back(index + 3);
+				index += 4;
+
+				/*m.Colors.push_back(1); m.Colors.push_back(0); m.Colors.push_back(0);
+				m.Colors.push_back(1); m.Colors.push_back(0); m.Colors.push_back(0);
+				m.Colors.push_back(1); m.Colors.push_back(0); m.Colors.push_back(0);
+				m.Colors.push_back(1); m.Colors.push_back(0); m.Colors.push_back(0);*/
+			}
+		}
+	}
+	//m.ColorsEnabled = true;
+
+	coordsMesh.SetMeshDrawMode(EMeshDrawMode::Lines);
+	coordsMesh.SetMeshLayout(EMeshLayout::VertexOnly);
+	coordsMesh.ColorsEnabled = true;
+
+	coordsMesh.Vertices.push_back(4); coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(0);
+	coordsMesh.Vertices.push_back(-4); coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(0);
+
+	coordsMesh.Vertices.push_back(4); coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(0);
+	coordsMesh.Vertices.push_back(-3); coordsMesh.Vertices.push_back(1); coordsMesh.Vertices.push_back(0);
+
+	coordsMesh.Vertices.push_back(4); coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(0);
+	coordsMesh.Vertices.push_back(-3); coordsMesh.Vertices.push_back(-1); coordsMesh.Vertices.push_back(0);
+
+
+
+	coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(4); coordsMesh.Vertices.push_back(0);
+	coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(-4); coordsMesh.Vertices.push_back(0);
+
+	coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(4); coordsMesh.Vertices.push_back(0);
+	coordsMesh.Vertices.push_back(1); coordsMesh.Vertices.push_back(-3); coordsMesh.Vertices.push_back(0);
+
+	coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(4); coordsMesh.Vertices.push_back(0);
+	coordsMesh.Vertices.push_back(-1); coordsMesh.Vertices.push_back(-3); coordsMesh.Vertices.push_back(0);
+
+
+
+	coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(4);
+	coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(-4);
+
+	coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(4);
+	coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(1); coordsMesh.Vertices.push_back(-3);
+
+	coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(4);
+	coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(-1); coordsMesh.Vertices.push_back(-3);
+
+	// colors
+	coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0);
+	coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0);
+	coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0);
+	coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0);
+	coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0);
+	coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0);
+
+	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0);
+	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0);
+	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0);
+	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0);
+	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0);
+	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0);
+
+	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1);
+	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1);
+	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1);
+	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1);
+	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1);
+	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1);
+	/*// top face
+	m.Vertices.push_back(1); m.Vertices.push_back(1); m.Vertices.push_back(1);
+	m.Vertices.push_back(1); m.Vertices.push_back(1); m.Vertices.push_back(0);
+	m.Vertices.push_back(0); m.Vertices.push_back(1); m.Vertices.push_back(0);
+	m.Vertices.push_back(0); m.Vertices.push_back(1); m.Vertices.push_back(1);
+
+	// top
+
+	m.Indices.push_back(0); m.Indices.push_back(1); m.Indices.push_back(3);
+	m.Indices.push_back(1); m.Indices.push_back(2); m.Indices.push_back(3);*/
+
+	/*
 	float vertices[] = {
 		 0.5f,  0.5f, 0.0f,  // top right
 		 0.5f, -0.5f, 0.0f,  // bottom right
@@ -303,70 +452,27 @@ void Application::InitTestCode()
 	};
 	unsigned int VBO, EBO;
 
-	Sh = std::unique_ptr<Shader>(new Shader("test.v", "test.f"));
+	
 
-	//m.Vertices.push_back()
 	m.Vertices.insert(m.Vertices.end(), vertices, vertices + 24);
-	m.Indices.insert(m.Indices.end(), indices, indices + 12);
+	m.Indices.insert(m.Indices.end(), indices, indices + 12);*/
+
+	Sh = std::unique_ptr<Shader>(new Shader("test.v", "test.f"));
+	//std::unique_ptr<Shader>(new Shader("test.v", "test.f"));
 	m.Create(Sh.get());
 
-	/*glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-	glBindVertexArray(VAO);
+	ColorShader = std::unique_ptr<Shader>(new Shader("Data//Shaders//color.v", "Data//Shaders//color.f"));
+	coordsMesh.Create(ColorShader.get());
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	// remember: do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the VAO; keep the EBO bound.
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	// You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-	// VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-	glBindVertexArray(0);*/
-
-	
-	//Sh.get()->init(vertexShaderSource, fragmentShaderSource);
-
-
-	//ShaderManager = std::unique_ptr<glShaderManager>(new glShaderManager());
-	
 	MainCamera.SetSpeed(0.001f);
 	MainCamera.SetPosition(glm::vec3(0, 0, 5));
+
+	
 }
 
 void Application::RenderTestCode()
 {
-	if (glfwGetKey(Window.get(), GLFW_KEY_Q))
-	{
-		MainCamera.SetAngles(0, 3.14f);
-	}
-	//glUseProgram(Sh->id());
-	/*Sh->bind();
-
-	glm::mat4 ProjectionMatrix = MainCamera.GetProjectionMatrix();
-	glm::mat4 ViewMatrix = MainCamera.GetViewMatrix();
-	glm::mat4 ModelMatrix = m.WorldMatrix;
-	glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
-
-	// Get a handle for our "MVP" uniform
-	GLuint MatrixID = glGetUniformLocation(Sh->id(), "MVP");
-	// Send our transformation to the currently bound shader, 
-		// in the "MVP" uniform
-	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);*/
-
+	
+	coordsMesh.Render(ColorShader.get(), &MainCamera);
 	m.Render(Sh.get(), &MainCamera);
-	/*glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-		//glDrawArrays(GL_TRIANGLES, 0, 6);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);*/
 }

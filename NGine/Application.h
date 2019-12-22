@@ -54,6 +54,7 @@ private:
 	void InitIMGUI();
 
 	void GLFWFramebufferSizeCallback(GLFWwindow* window, int width, int height);
+	void GLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 	void CalculateDeltaTime();
 	void SaveLastDeltaTime();
@@ -93,4 +94,8 @@ private:
 	//std::unique_ptr<glShader> TestShader;
 
 	bool IsMouseLookEnabled = true;
+	bool IsWireframeEnabled = false;
+
+	std::unique_ptr<Shader> ColorShader;
+	Mesh coordsMesh;
 };

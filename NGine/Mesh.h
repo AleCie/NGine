@@ -5,13 +5,14 @@
 
 enum class EMeshLayout
 {
-	Vertex,
-	VertexColor,
-	VertexColorNormal,
-	VertexTexture,
-	VertexTextureNormal,
-	VertexTextureColor,
-	VertexTextureColorNormal
+	VertexElement,
+	VertexOnly
+};
+
+enum class EMeshDrawMode
+{
+	Triangles,
+	Lines
 };
 
 class Camera;
@@ -25,7 +26,7 @@ public:
 	~Mesh();
 
 	std::vector<float> Vertices;
-	std::vector<int> Indices;
+	std::vector<unsigned int> Indices;
 	std::vector<float> UVs;
 	std::vector<float> Colors;
 
@@ -34,10 +35,17 @@ public:
 
 	void Create(Shader* shader);
 	void Render(Shader *shader, Camera *camera);
+	void SetMeshLayout(EMeshLayout layout);
+	void SetMeshDrawMode(EMeshDrawMode mode);
+
+	bool ColorsEnabled = false;
 
 private:
 
 	unsigned int VAO, VBO, EBO;
 	unsigned int MatrixID;
+
+	EMeshLayout MeshLayout = EMeshLayout::VertexElement;
+	EMeshDrawMode MeshDrawMode = EMeshDrawMode::Triangles;
 	
 };

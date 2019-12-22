@@ -24,17 +24,45 @@ void Mesh::Create(Shader* shader)
 {
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
+
+	if (MeshLayout == EMeshLayout::VertexElement)
+	{
+		glGenBuffers(1, &EBO);
+	}
 	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, Vertices.size() * sizeof(float), &Vertices[0], GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, Indices.size() * sizeof(int), &Indices[0], GL_STATIC_DRAW);
+	if (MeshLayout == EMeshLayout::VertexElement)
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, Indices.size() * sizeof(int), &Indices[0], GL_STATIC_DRAW);
+	}
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+	if (ColorsEnabled)
+	{
+		GLuint colorbuffer;
+		glGenBuffers(1, &colorbuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
+		glBufferData(GL_ARRAY_BUFFER, Colors.size() * sizeof(float), &Colors[0], GL_STATIC_DRAW);
+
+		glEnableVertexAttribArray(1);
+		glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
+		glVertexAttribPointer(
+			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
+			3,                                // size
+			GL_FLOAT,                         // type
+			GL_FALSE,                         // normalized?
+			0,                                // stride
+			(void*)0                          // array buffer offset
+		);
+	}
+
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
 	// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
@@ -55,6 +83,7 @@ void Mesh::Render(Shader* shader, Camera* camera)
 	shader->bind();
 
 	MVP = camera->GetProjectionMatrix() * camera->GetViewMatrix() * WorldMatrix;
+	//MVP = WorldMatrix * camera->GetViewMatrix() * camera->GetProjectionMatrix();
 
 	// Send our transformation to the currently bound shader, 
 		// in the "MVP" uniform
@@ -62,5 +91,24 @@ void Mesh::Render(Shader* shader, Camera* camera)
 
 	glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
 		//glDrawArrays(GL_TRIANGLES, 0, 6);
-	glDrawElements(GL_TRIANGLES, Indices.size(), GL_UNSIGNED_INT, 0);
+
+	if (MeshDrawMode == EMeshDrawMode::Triangles && MeshLayout == EMeshLayout::VertexElement)
+	{
+		glDrawElements(GL_TRIANGLES, Indices.size(), GL_UNSIGNED_INT, 0);
+	}
+	if (MeshDrawMode == EMeshDrawMode::Lines && MeshLayout == EMeshLayout::VertexOnly)
+	{
+		//glDrawElements(GL_TRIANGLES, Indices.size(), GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_LINES, 0, Vertices.size());
+	}
+}
+
+void Mesh::SetMeshLayout(EMeshLayout layout)
+{
+	MeshLayout = layout;
+}
+
+void Mesh::SetMeshDrawMode(EMeshDrawMode mode)
+{
+	MeshDrawMode = mode;
 }
