@@ -4,7 +4,9 @@
 
 #include "Shader.h"
 #include "glsl.h"
+#include <glm/gtx/transform.hpp>
 
+using namespace std;
 Application::Application(int windowWidth, int windowHeight)
 	: MainCamera(60.0f, 4.0f / 3.0f, 0.1f, 1000.0f)
 {
@@ -145,7 +147,7 @@ void Application::RenderUI()
 void Application::InitGLFW()
 {
 	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // consider switching to 2.1 with extensions for release
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
@@ -212,6 +214,66 @@ void Application::InitOGL()
 
 	glPolygonMode(GL_FRONT, GL_FILL);
 	glPolygonMode(GL_BACK, GL_LINE);
+
+	/*auto ogldebugfunc = [](GLenum source,
+		GLenum type,
+		GLuint id,
+		GLenum severity,
+		GLsizei length,
+		const GLchar* message,
+		const void* userParam) {
+
+			cout << "---------------------opengl-callback-start------------" << endl;
+			cout << "message: " << message << endl;
+			cout << "type: ";
+			switch (type) {
+			case GL_DEBUG_TYPE_ERROR:
+				cout << "ERROR";
+				break;
+			case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+				cout << "DEPRECATED_BEHAVIOR";
+				break;
+			case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+				cout << "UNDEFINED_BEHAVIOR";
+				break;
+			case GL_DEBUG_TYPE_PORTABILITY:
+				cout << "PORTABILITY";
+				break;
+			case GL_DEBUG_TYPE_PERFORMANCE:
+				cout << "PERFORMANCE";
+				break;
+			case GL_DEBUG_TYPE_OTHER:
+				cout << "OTHER";
+				break;
+			}
+			cout << endl;
+
+			cout << "id: " << id << endl;
+			cout << "severity: ";
+			switch (severity) {
+			case GL_DEBUG_SEVERITY_LOW:
+				cout << "LOW";
+				break;
+			case GL_DEBUG_SEVERITY_MEDIUM:
+				cout << "MEDIUM";
+				break;
+			case GL_DEBUG_SEVERITY_HIGH:
+				cout << "HIGH";
+				break;
+			}
+			cout << endl;
+			cout << "---------------------opengl-callback-end--------------" << endl;
+	};
+
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	glDebugMessageCallback(ogldebugfunc, nullptr);
+	GLuint unusedIds = 0;
+	glDebugMessageControl(GL_DONT_CARE,
+		GL_DONT_CARE,
+		GL_DONT_CARE,
+		0,
+		&unusedIds,
+		true);*/
 }
 
 void Application::InitIMGUI()
@@ -273,23 +335,6 @@ void Application::GLFWKeyCallback(GLFWwindow* window, int key, int scancode, int
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		}
 	}
-
-	/*if (glfwGetKey(Window.get(), GLFW_KEY_Q))
-	{
-		MainCamera.SetAngles(0, 3.14f);
-	}
-
-	if (glfwGetKey(Window.get(), GLFW_KEY_P))
-	{
-		IsMouseLookEnabled = false;
-		EnableCursor();
-	}
-
-	if (glfwGetKey(Window.get(), GLFW_KEY_O))
-	{
-		IsMouseLookEnabled = true;
-		DisableCursor();
-	}*/
 }
 
 void Application::CalculateDeltaTime()
@@ -417,125 +462,55 @@ void Application::InitTestCode()
 				m.Indices.push_back(index + 1); m.Indices.push_back(index + 2); m.Indices.push_back(index + 3);
 				index += 4;
 
-				/*m.Colors.push_back(1); m.Colors.push_back(0); m.Colors.push_back(0);
-				m.Colors.push_back(1); m.Colors.push_back(0); m.Colors.push_back(0);
-				m.Colors.push_back(1); m.Colors.push_back(0); m.Colors.push_back(0);
-				m.Colors.push_back(1); m.Colors.push_back(0); m.Colors.push_back(0);*/
+				//uvs
+				for (int i = 0; i < 6; i++)
+				{
+					m.UVs.push_back(0); m.UVs.push_back(0);
+					m.UVs.push_back(1); m.UVs.push_back(0);
+					m.UVs.push_back(1); m.UVs.push_back(1);
+					m.UVs.push_back(0); m.UVs.push_back(1);
+				}
 			}
 		}
 	}
-	//m.ColorsEnabled = true;
-
-	/*coordsMesh.SetMeshDrawMode(EMeshDrawMode::Lines);
-	coordsMesh.SetMeshLayout(EMeshLayout::VertexOnly);
-	coordsMesh.ColorsEnabled = true;
-
-	coordsMesh.Vertices.push_back(4); coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(0);
-	coordsMesh.Vertices.push_back(-4); coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(0);
-
-	coordsMesh.Vertices.push_back(4); coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(0);
-	coordsMesh.Vertices.push_back(-3); coordsMesh.Vertices.push_back(1); coordsMesh.Vertices.push_back(0);
-
-	coordsMesh.Vertices.push_back(4); coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(0);
-	coordsMesh.Vertices.push_back(-3); coordsMesh.Vertices.push_back(-1); coordsMesh.Vertices.push_back(0);
-
-
-
-	coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(4); coordsMesh.Vertices.push_back(0);
-	coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(-4); coordsMesh.Vertices.push_back(0);
-
-	coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(4); coordsMesh.Vertices.push_back(0);
-	coordsMesh.Vertices.push_back(1); coordsMesh.Vertices.push_back(-3); coordsMesh.Vertices.push_back(0);
-
-	coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(4); coordsMesh.Vertices.push_back(0);
-	coordsMesh.Vertices.push_back(-1); coordsMesh.Vertices.push_back(-3); coordsMesh.Vertices.push_back(0);
-
-
-
-	coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(4);
-	coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(-4);
-
-	coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(4);
-	coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(1); coordsMesh.Vertices.push_back(-3);
-
-	coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(4);
-	coordsMesh.Vertices.push_back(0); coordsMesh.Vertices.push_back(-1); coordsMesh.Vertices.push_back(-3);
-
-	// colors
-	coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0);
-	coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0);
-	coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0);
-	coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0);
-	coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0);
-	coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0);
-
-	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0);
-	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0);
-	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0);
-	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0);
-	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0);
-	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1); coordsMesh.Colors.push_back(0);
-
-	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1);
-	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1);
-	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1);
-	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1);
-	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1);
-	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1);
-	// top face
-	m.Vertices.push_back(1); m.Vertices.push_back(1); m.Vertices.push_back(1);
-	m.Vertices.push_back(1); m.Vertices.push_back(1); m.Vertices.push_back(0);
-	m.Vertices.push_back(0); m.Vertices.push_back(1); m.Vertices.push_back(0);
-	m.Vertices.push_back(0); m.Vertices.push_back(1); m.Vertices.push_back(1);
-
-	// top
-
-	m.Indices.push_back(0); m.Indices.push_back(1); m.Indices.push_back(3);
-	m.Indices.push_back(1); m.Indices.push_back(2); m.Indices.push_back(3);*/
-
-	/*
-	float vertices[] = {
-		 0.5f,  0.5f, 0.0f,  // top right
-		 0.5f, -0.5f, 0.0f,  // bottom right
-		-0.5f, -0.5f, 0.0f,  // bottom left
-		-0.5f,  0.5f, 0.0f,   // top left 
-
-		0.25f,  0.25f, 1.0f,  // top right
-		 0.25f, -0.25f, 1.0f,  // bottom right
-		-0.25f, -0.25f, 1.0f,  // bottom left
-		-0.25f,  0.25f, 1.0f   // top left 
-	};
-	unsigned int indices[] = {  // note that we start from 0!
-		0, 1, 3,  // first Triangle
-		1, 2, 3,   // second Triangle
-
-		4, 5, 7,
-		5, 6, 7
-	};
-	unsigned int VBO, EBO;
-
-	
-
-	m.Vertices.insert(m.Vertices.end(), vertices, vertices + 24);
-	m.Indices.insert(m.Indices.end(), indices, indices + 12);*/
 
 	Sh = std::unique_ptr<Shader>(new Shader("test.v", "test.f"));
-	//std::unique_ptr<Shader>(new Shader("test.v", "test.f"));
-	m.Create(Sh.get());
+	TextureShader = std::unique_ptr<Shader>(new Shader("Data//Shaders//texture.v", "Data//Shaders//texture.f"));
+	TextureArrayShader = std::unique_ptr<Shader>(new Shader("Data//Shaders//texturearray.v", "Data//Shaders//texturearray.f"));
+	//glUniform1i(0, 0);
+	TestTexture = std::unique_ptr<Texture>(new Texture("Data//Textures//dirt.jpg", GL_TEXTURE_2D));
+	TestTexture2 = std::unique_ptr<Texture>(new Texture("Data//Textures//stone.png", GL_TEXTURE_2D));
 
+	//std::unique_ptr<Shader>(new Shader("test.v", "test.f"));
+	m.UVsEnabled = true;
+	m.Create(TextureShader.get());
+
+	m2.UVsEnabled = true;
+	m2.Vertices = m.Vertices;
+	m2.Indices = m.Indices;
+	m2.UVs = m.UVs;
+	m2.Create(TextureShader.get());
+
+	m2.WorldMatrix = glm::translate(m2.WorldMatrix, glm::vec3(0, 16, 0));
+		
 	ColorShader = std::unique_ptr<Shader>(new Shader("Data//Shaders//color.v", "Data//Shaders//color.f"));
 	//coordsMesh.Create(ColorShader.get());
 	CoordsObj.Create(ColorShader.get());
 
 	MainCamera.SetSpeed(0.1f);
 	MainCamera.SetPosition(glm::vec3(0, 0, 5));
-
-	
 }
 
 void Application::RenderTestCode()
 {
 	
 	CoordsObj.Render(ColorShader.get(), &MainCamera);
-	m.Render(Sh.get(), &MainCamera);
+
+	TestTexture->bind(0);
+
+	m.Render(TextureShader.get(), &MainCamera);
+
+	TestTexture2->bind(0);
+
+	m2.Render(TextureShader.get(), &MainCamera);
 }

@@ -39,6 +39,7 @@ public:
 	void SetMeshDrawMode(EMeshDrawMode mode);
 
 	bool ColorsEnabled = false;
+	bool UVsEnabled = false;
 
 private:
 

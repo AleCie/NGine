@@ -48,6 +48,7 @@
       <Filter>IMGUI\impl</Filter>
     </ClCompile>
     <ClCompile Include="CoordsGizmo.cpp" />
+    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -87,6 +88,7 @@
       <Filter>IMGUI\impl</Filter>
     </ClInclude>
     <ClInclude Include="CoordsGizmo.h" />
+    <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="FastNoiseSIMD">

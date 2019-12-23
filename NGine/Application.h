@@ -16,6 +16,7 @@
 #include "Camera.h"
 #include "Mesh.h"
 #include "CoordsGizmo.h"
+#include "Texture.h"
 
 struct DestroyGLFWwnd {
 
@@ -91,6 +92,7 @@ private:
 	Camera MainCamera;
 
 	Mesh m;
+	Mesh m2;
 	//std::unique_ptr<glShaderManager> ShaderManager;
 	//std::unique_ptr<glShader> TestShader;
 
@@ -98,7 +100,13 @@ private:
 	bool IsWireframeEnabled = false;
 
 	std::unique_ptr<Shader> ColorShader;
+	std::unique_ptr<Shader> TextureShader;
+	std::unique_ptr<Shader> TextureArrayShader;
+	std::unique_ptr<Texture> TestTexture;
+	std::unique_ptr<Texture> TestTexture2;
 	//Mesh coordsMesh;
 
 	CoordsGizmo CoordsObj;
+
+	GLuint TextureArray;
 };
