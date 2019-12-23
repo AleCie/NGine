@@ -11,7 +11,7 @@ Texture::Texture(const char* fileName, GLenum type)
 
 	glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	if (image)
@@ -24,7 +24,7 @@ Texture::Texture(const char* fileName, GLenum type)
 		std::cout << "ERROR::TEXTURE::TEXTURE_LOADING_FAILED: " << fileName << "\n";
 	}
 
-	glActiveTexture(0);
+	//glActiveTexture(0);
 	glBindTexture(type, 0);
 	SOIL_free_image_data(image);
 }
@@ -36,7 +36,7 @@ Texture::~Texture()
 
 void Texture::bind(const GLint texture_unit)
 {
-	glActiveTexture(GL_TEXTURE0 + texture_unit);
+	//glActiveTexture(GL_TEXTURE0 + texture_unit);
 	glBindTexture(this->type, this->id);
 }
 

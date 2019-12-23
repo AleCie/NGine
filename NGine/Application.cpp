@@ -150,6 +150,7 @@ void Application::InitGLFW()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // consider switching to 2.1 with extensions for release
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
 	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
 
 	Window = sptr_GLFWwindow(glfwCreateWindow(WindowWidth, WindowHeight, "LearnOpenGL", NULL, NULL));
@@ -215,7 +216,7 @@ void Application::InitOGL()
 	glPolygonMode(GL_FRONT, GL_FILL);
 	glPolygonMode(GL_BACK, GL_LINE);
 
-	/*auto ogldebugfunc = [](GLenum source,
+	auto ogldebugfunc = [](GLenum source,
 		GLenum type,
 		GLuint id,
 		GLenum severity,
@@ -273,7 +274,7 @@ void Application::InitOGL()
 		GL_DONT_CARE,
 		0,
 		&unusedIds,
-		true);*/
+		true);
 }
 
 void Application::InitIMGUI()
@@ -480,7 +481,7 @@ void Application::InitTestCode()
 	//glUniform1i(0, 0);
 	TestTexture = std::unique_ptr<Texture>(new Texture("Data//Textures//dirt.jpg", GL_TEXTURE_2D));
 	TestTexture2 = std::unique_ptr<Texture>(new Texture("Data//Textures//stone.png", GL_TEXTURE_2D));
-
+	
 	//std::unique_ptr<Shader>(new Shader("test.v", "test.f"));
 	m.UVsEnabled = true;
 	m.Create(TextureArrayShader.get());
@@ -518,8 +519,8 @@ void Application::InitTestCode()
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D_ARRAY, TextureArray);
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D_ARRAY, TextureArray);
 }
 
 void Application::RenderTestCode()
