@@ -15,6 +15,7 @@
 #include "Color.h"
 #include "Camera.h"
 #include "Mesh.h"
+#include "CoordsGizmo.h"
 
 struct DestroyGLFWwnd {
 
@@ -97,5 +98,7 @@ private:
 	bool IsWireframeEnabled = false;
 
 	std::unique_ptr<Shader> ColorShader;
-	Mesh coordsMesh;
+	//Mesh coordsMesh;
+
+	CoordsGizmo CoordsObj;
 };

@@ -426,7 +426,7 @@ void Application::InitTestCode()
 	}
 	//m.ColorsEnabled = true;
 
-	coordsMesh.SetMeshDrawMode(EMeshDrawMode::Lines);
+	/*coordsMesh.SetMeshDrawMode(EMeshDrawMode::Lines);
 	coordsMesh.SetMeshLayout(EMeshLayout::VertexOnly);
 	coordsMesh.ColorsEnabled = true;
 
@@ -482,7 +482,7 @@ void Application::InitTestCode()
 	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1);
 	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1);
 	coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(0); coordsMesh.Colors.push_back(1);
-	/*// top face
+	// top face
 	m.Vertices.push_back(1); m.Vertices.push_back(1); m.Vertices.push_back(1);
 	m.Vertices.push_back(1); m.Vertices.push_back(1); m.Vertices.push_back(0);
 	m.Vertices.push_back(0); m.Vertices.push_back(1); m.Vertices.push_back(0);
@@ -524,7 +524,8 @@ void Application::InitTestCode()
 	m.Create(Sh.get());
 
 	ColorShader = std::unique_ptr<Shader>(new Shader("Data//Shaders//color.v", "Data//Shaders//color.f"));
-	coordsMesh.Create(ColorShader.get());
+	//coordsMesh.Create(ColorShader.get());
+	CoordsObj.Create(ColorShader.get());
 
 	MainCamera.SetSpeed(0.1f);
 	MainCamera.SetPosition(glm::vec3(0, 0, 5));
@@ -535,6 +536,6 @@ void Application::InitTestCode()
 void Application::RenderTestCode()
 {
 	
-	coordsMesh.Render(ColorShader.get(), &MainCamera);
+	CoordsObj.Render(ColorShader.get(), &MainCamera);
 	m.Render(Sh.get(), &MainCamera);
 }

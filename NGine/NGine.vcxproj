@@ -142,6 +142,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="CoordsGizmo.cpp" />
     <ClCompile Include="FastNoiseSIMD\FastNoiseSIMD.cpp" />
     <ClCompile Include="FastNoiseSIMD\FastNoiseSIMD_avx2.cpp" />
     <ClCompile Include="FastNoiseSIMD\FastNoiseSIMD_avx512.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="CoordsGizmo.h" />
     <ClInclude Include="FastNoiseSIMD\FastNoiseSIMD.h" />
     <ClInclude Include="FastNoiseSIMD\FastNoiseSIMD_internal.h" />
     <ClInclude Include="glsl.h" />
