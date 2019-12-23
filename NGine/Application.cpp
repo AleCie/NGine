@@ -483,7 +483,7 @@ void Application::InitTestCode()
 
 	//std::unique_ptr<Shader>(new Shader("test.v", "test.f"));
 	m.UVsEnabled = true;
-	m.Create(TextureShader.get());
+	m.Create(TextureArrayShader.get());
 
 	m2.UVsEnabled = true;
 	m2.Vertices = m.Vertices;
@@ -499,6 +499,27 @@ void Application::InitTestCode()
 
 	MainCamera.SetSpeed(0.1f);
 	MainCamera.SetPosition(glm::vec3(0, 0, 5));
+
+
+	glGenTextures(1, &TextureArray);
+	glBindTexture(GL_TEXTURE_2D_ARRAY, TextureArray);
+	glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA8, 512, 512, 2);//last three numbers are size of images and array
+
+	int dw, dh, sw, sh;
+	unsigned char* image1 = SOIL_load_image("Data//Textures//dirt.jpg", &dw, &dh, NULL, SOIL_LOAD_RGBA);
+	unsigned char* image2 = SOIL_load_image("Data//Textures//stone.png", &sw, &sh, NULL, SOIL_LOAD_RGBA);
+
+	glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, dw, dh, 1, GL_RGBA, GL_UNSIGNED_BYTE, image1);
+	glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, 1, sw, sh, 1, GL_RGBA, GL_UNSIGNED_BYTE, image2);
+
+
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D_ARRAY, TextureArray);
 }
 
 void Application::RenderTestCode()
@@ -506,9 +527,11 @@ void Application::RenderTestCode()
 	
 	CoordsObj.Render(ColorShader.get(), &MainCamera);
 
-	TestTexture->bind(0);
+	//TestTexture->bind(0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D_ARRAY, TextureArray);
 
-	m.Render(TextureShader.get(), &MainCamera);
+	m.Render(TextureArrayShader.get(), &MainCamera);
 
 	TestTexture2->bind(0);
 
