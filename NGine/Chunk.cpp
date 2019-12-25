@@ -6,6 +6,9 @@
 
 #include "Filepath.h"
 
+#include <glm/ext/matrix_transform.hpp>
+#include "FastNoiseSIMD/FastNoiseSIMD.h"
+
 Chunk::Chunk()
 {
 }
@@ -28,18 +31,59 @@ void Chunk::Create(glm::vec3 position, std::shared_ptr<Shader> shader)
 
 void Chunk::Render(Camera *cam)
 {
-	ChunkMesh->Render(ChunkShader.get(), cam);
+	if (IsChunkEmpty == false)
+	{
+		ChunkMesh->Render(ChunkShader.get(), cam);
+	}
+}
+
+void Chunk::RebuildMesh()
+{
+	IsChunkEmpty = true;
+
+	ChunkMesh->Vertices.clear();
+	ChunkMesh->Indices.clear();
+	ChunkMesh->Normals.clear();
+	ChunkMesh->UVs.clear();
+
+	ChunkMesh.reset();
+
+	CreateVoxelData();
+	CreateMesh();
+
+
+}
+
+glm::mat4 Chunk::GetWorldMatrix()
+{
+	return ChunkMesh->WorldMatrix;
 }
 
 void Chunk::CreateVoxelData()
 {
+	FastNoiseSIMD* myNoise = FastNoiseSIMD::NewFastNoiseSIMD();
+	
+	// Get a set of 16 x 16 x 16 Simplex Fractal noise
+	float* noiseSet = myNoise->GetSimplexFractalSet(Position.x, Position.y, Position.z, ChunkSize, ChunkSize, ChunkSize, NoiseScale);
+	int noiseIdx = 0;
+
 	for (int x = 0; x < ChunkSize; x++)
 	{
 		for (int y = 0; y < ChunkSize; y++)
 		{
 			for (int z = 0; z < ChunkSize; z++)
 			{
-				if (y < 8)
+
+				if (noiseSet[noiseIdx] > NoiseTreshold)
+				{
+					Data[x][y][z] = 0;
+				}
+				else
+				{
+					Data[x][y][z] = -1;
+				}
+				noiseIdx++;
+				/*if (y < 8)
 				{
 					if (x < 6 && z < 6)
 					{
@@ -62,10 +106,12 @@ void Chunk::CreateVoxelData()
 					{
 						Data[x][y][z] = 1;
 					}
-				}
+				}*/
 			}
 		}
 	}
+
+	FastNoiseSIMD::FreeNoiseSet(noiseSet);
 }
 
 void Chunk::CreateMesh()
@@ -101,7 +147,18 @@ void Chunk::CreateMesh()
 		}
 	}
 
-	ChunkMesh->Create(ChunkShader.get());
+	if (ChunkMesh->Vertices.size() > 0)
+	{
+		ChunkMesh->Create(ChunkShader.get());
+
+		IsChunkEmpty = false;
+	}
+	else
+	{
+		IsChunkEmpty = true;
+	}
+
+	ChunkMesh->WorldMatrix = glm::translate(ChunkMesh->WorldMatrix, Position);
 }
 
 bool Chunk::ShouldAddTop(int x, int y, int z)

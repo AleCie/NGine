@@ -93,16 +93,11 @@ private:
 
 	Camera MainCamera;
 
-	Mesh m;
-	Mesh m2;
-	//std::unique_ptr<glShaderManager> ShaderManager;
-	//std::unique_ptr<glShader> TestShader;
 
 	bool IsMouseLookEnabled = true;
 	bool IsWireframeEnabled = false;
 
 	std::unique_ptr<Shader> ColorShader;
-	std::unique_ptr<Shader> TextureShader;
 	std::unique_ptr<Shader> TextureArrayShader;
 	std::shared_ptr<Shader> TexArrLightShader;
 
@@ -114,5 +109,5 @@ private:
 
 	GLuint TextureArray;
 
-	Chunk chunk;
+	Chunk chunk, chunk2, chunk3, chunk4;
 };

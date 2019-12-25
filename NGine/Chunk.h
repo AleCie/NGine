@@ -19,7 +19,14 @@ public:
 	void Create(glm::vec3 position, std::shared_ptr<Shader> shader);
 	void Render(Camera *cam);
 
+	void RebuildMesh();
+
+	glm::mat4 GetWorldMatrix();
+
 	static const int ChunkSize = 16;
+
+	float NoiseTreshold = 0.0f;
+	float NoiseScale = 1.0f;
 
 private:
 
@@ -46,4 +53,6 @@ private:
 	std::shared_ptr<Shader> ChunkShader;
 
 	glm::vec3 Position = glm::vec3(0);
+
+	bool IsChunkEmpty = true;
 };

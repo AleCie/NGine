@@ -99,12 +99,37 @@ void Application::Render()
 
 float cpos[3], tpos[3];
 
+float noiseTreshold = 0;
+float noiseScale = 1;
+
 void Application::RenderUI()
 {
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
+
+	ImGui::Begin("Terrain Gen");
+	ImGui::SliderFloat ("treshold", &noiseTreshold, -1.0f, 1.0f);
+	ImGui::SliderFloat("scale", &noiseScale, 0.0f, 100.0f);
+	if (ImGui::Button("generate"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+	{
+		chunk.NoiseTreshold = noiseTreshold;
+		chunk2.NoiseTreshold = noiseTreshold;
+		chunk3.NoiseTreshold = noiseTreshold;
+		chunk4.NoiseTreshold = noiseTreshold;
+
+		chunk.NoiseScale = noiseScale;
+		chunk2.NoiseScale = noiseScale;
+		chunk3.NoiseScale = noiseScale;
+		chunk4.NoiseScale = noiseScale;
+
+		chunk.RebuildMesh();
+		chunk2.RebuildMesh();
+		chunk3.RebuildMesh();
+		chunk4.RebuildMesh();
+	}
+	ImGui::End();
 
 	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 	{
@@ -382,162 +407,22 @@ void Application::DisableCursor()
 
 void Application::InitTestCode()
 {
-	// set up vertex data (and buffer(s)) and configure vertex attributes
-	// ------------------------------------------------------------------
-	int size = 16;
-	int index = 0;
-	for (int x = 0; x < size; x++)
-	{
-		for (int y = 0; y < size; y++)
-		{
-			for (int z = 0; z < size; z++)
-			{
-				// top face
-				m.Vertices.push_back(1 + x); m.Vertices.push_back(1 + y); m.Vertices.push_back(1 + z);
-				m.Vertices.push_back(1 + x); m.Vertices.push_back(1 + y); m.Vertices.push_back(0 + z);
-				m.Vertices.push_back(0 + x); m.Vertices.push_back(1 + y); m.Vertices.push_back(0 + z);
-				m.Vertices.push_back(0 + x); m.Vertices.push_back(1 + y); m.Vertices.push_back(1 + z);
-
-				// top
-
-				m.Indices.push_back(index + 0); m.Indices.push_back(index + 1); m.Indices.push_back(index + 3);
-				m.Indices.push_back(index + 1); m.Indices.push_back(index + 2); m.Indices.push_back(index + 3);
-				index += 4;
-
-				m.Normals.push_back(0); m.Normals.push_back(1); m.Normals.push_back(0);
-				m.Normals.push_back(0); m.Normals.push_back(1); m.Normals.push_back(0);
-				m.Normals.push_back(0); m.Normals.push_back(1); m.Normals.push_back(0);
-				m.Normals.push_back(0); m.Normals.push_back(1); m.Normals.push_back(0);
-
-				// bottom face
-				m.Vertices.push_back(1 + x); m.Vertices.push_back(y); m.Vertices.push_back(1 + z);
-				m.Vertices.push_back(1 + x); m.Vertices.push_back(y); m.Vertices.push_back(0 + z);
-				m.Vertices.push_back(0 + x); m.Vertices.push_back(y); m.Vertices.push_back(0 + z);
-				m.Vertices.push_back(0 + x); m.Vertices.push_back(y); m.Vertices.push_back(1 + z);
-
-				// bottom
-
-				m.Indices.push_back(index + 3); m.Indices.push_back(index + 1); m.Indices.push_back(index + 0);
-				m.Indices.push_back(index + 3); m.Indices.push_back(index + 2); m.Indices.push_back(index + 1);
-				index += 4;
-
-				m.Normals.push_back(0); m.Normals.push_back(-1); m.Normals.push_back(0);
-				m.Normals.push_back(0); m.Normals.push_back(-1); m.Normals.push_back(0);
-				m.Normals.push_back(0); m.Normals.push_back(-1); m.Normals.push_back(0);
-				m.Normals.push_back(0); m.Normals.push_back(-1); m.Normals.push_back(0);
-
-				// back face
-				m.Vertices.push_back(1 + x); m.Vertices.push_back(1 + y); m.Vertices.push_back(z);
-				m.Vertices.push_back(1 + x); m.Vertices.push_back(y); m.Vertices.push_back(z);
-				m.Vertices.push_back(0 + x); m.Vertices.push_back(y); m.Vertices.push_back(z);
-				m.Vertices.push_back(0 + x); m.Vertices.push_back(1 + y); m.Vertices.push_back(z);
-
-				// back
-
-				m.Indices.push_back(index + 0); m.Indices.push_back(index + 1); m.Indices.push_back(index + 3);
-				m.Indices.push_back(index + 1); m.Indices.push_back(index + 2); m.Indices.push_back(index + 3);
-				index += 4;
-
-				m.Normals.push_back(0); m.Normals.push_back(0); m.Normals.push_back(-1);
-				m.Normals.push_back(0); m.Normals.push_back(0); m.Normals.push_back(-1);
-				m.Normals.push_back(0); m.Normals.push_back(0); m.Normals.push_back(-1);
-				m.Normals.push_back(0); m.Normals.push_back(0); m.Normals.push_back(-1);
-
-				// front face
-				m.Vertices.push_back(1 + x); m.Vertices.push_back(1 + y); m.Vertices.push_back(z + 1);
-				m.Vertices.push_back(1 + x); m.Vertices.push_back(y); m.Vertices.push_back(z + 1);
-				m.Vertices.push_back(0 + x); m.Vertices.push_back(y); m.Vertices.push_back(z + 1);
-				m.Vertices.push_back(0 + x); m.Vertices.push_back(1 + y); m.Vertices.push_back(z + 1);
-
-				// front
-
-				m.Indices.push_back(index + 3); m.Indices.push_back(index + 1); m.Indices.push_back(index + 0);
-				m.Indices.push_back(index + 3); m.Indices.push_back(index + 2); m.Indices.push_back(index + 1);
-				index += 4;
-
-				m.Normals.push_back(0); m.Normals.push_back(0); m.Normals.push_back(1);
-				m.Normals.push_back(0); m.Normals.push_back(0); m.Normals.push_back(1);
-				m.Normals.push_back(0); m.Normals.push_back(0); m.Normals.push_back(1);
-				m.Normals.push_back(0); m.Normals.push_back(0); m.Normals.push_back(1);
-
-				// left face
-				m.Vertices.push_back(x); m.Vertices.push_back(1 + y); m.Vertices.push_back(z + 1);
-				m.Vertices.push_back(x); m.Vertices.push_back(y); m.Vertices.push_back(z + 1);
-				m.Vertices.push_back(x); m.Vertices.push_back(y); m.Vertices.push_back(z);
-				m.Vertices.push_back(x); m.Vertices.push_back(1 + y); m.Vertices.push_back(z);
-
-				// left
-
-				m.Indices.push_back(index + 3); m.Indices.push_back(index + 1); m.Indices.push_back(index + 0);
-				m.Indices.push_back(index + 3); m.Indices.push_back(index + 2); m.Indices.push_back(index + 1);
-				index += 4;
-
-				m.Normals.push_back(-1); m.Normals.push_back(0); m.Normals.push_back(0);
-				m.Normals.push_back(-1); m.Normals.push_back(0); m.Normals.push_back(0);
-				m.Normals.push_back(-1); m.Normals.push_back(0); m.Normals.push_back(0);
-				m.Normals.push_back(-1); m.Normals.push_back(0); m.Normals.push_back(0);
-
-				// right face
-				m.Vertices.push_back(x + 1); m.Vertices.push_back(1 + y); m.Vertices.push_back(z + 1);
-				m.Vertices.push_back(x + 1); m.Vertices.push_back(y); m.Vertices.push_back(z + 1);
-				m.Vertices.push_back(x + 1); m.Vertices.push_back(y); m.Vertices.push_back(z);
-				m.Vertices.push_back(x + 1); m.Vertices.push_back(1 + y); m.Vertices.push_back(z);
-
-				// right
-
-				m.Indices.push_back(index + 0); m.Indices.push_back(index + 1); m.Indices.push_back(index + 3);
-				m.Indices.push_back(index + 1); m.Indices.push_back(index + 2); m.Indices.push_back(index + 3);
-				index += 4;
-
-				m.Normals.push_back(1); m.Normals.push_back(0); m.Normals.push_back(0);
-				m.Normals.push_back(1); m.Normals.push_back(0); m.Normals.push_back(0);
-				m.Normals.push_back(1); m.Normals.push_back(0); m.Normals.push_back(0);
-				m.Normals.push_back(1); m.Normals.push_back(0); m.Normals.push_back(0);
-
-				//uvs
-				for (int i = 0; i < 6; i++)
-				{
-					m.UVs.push_back(0); m.UVs.push_back(0);
-					m.UVs.push_back(1); m.UVs.push_back(0);
-					m.UVs.push_back(1); m.UVs.push_back(1);
-					m.UVs.push_back(0); m.UVs.push_back(1);
-				}
-			}
-		}
-	}
 
 	Sh = std::unique_ptr<Shader>(new Shader("test.v", "test.f"));
-	TextureShader = std::unique_ptr<Shader>(new Shader("Data//Shaders//texture.v", "Data//Shaders//texture.f"));
+
 	TextureArrayShader = std::unique_ptr<Shader>(new Shader("Data//Shaders//texturearray.v", "Data//Shaders//texturearray.f"));
 	TexArrLightShader = std::shared_ptr<Shader>(new Shader("Data//Shaders//texarrlight.v", "Data//Shaders//texarrlight.f"));
 
-	//glUniform1i(0, 0);
 	TestTexture = std::unique_ptr<Texture>(new Texture("Data//Textures//dirt.jpg", GL_TEXTURE_2D));
 	TestTexture2 = std::unique_ptr<Texture>(new Texture("Data//Textures//stone.png", GL_TEXTURE_2D));
 	
 	chunk.Create(glm::vec3(0), TexArrLightShader);
+	chunk2.Create(glm::vec3(16, 0, 0), TexArrLightShader);
+	chunk3.Create(glm::vec3(16, 0, 16), TexArrLightShader);
+	chunk4.Create(glm::vec3(0, 0, 16), TexArrLightShader);
 
-	//std::unique_ptr<Shader>(new Shader("test.v", "test.f"));
-	m.UVsEnabled = true;
-	m.IndicesEnabled = true;
-	m.UVsAttribute = 1;
-	m.NormalsEnabled = true;
-	m.NormalsAttribute = 2;
-	m.Create(TextureArrayShader.get());
 
-	m2.UVsEnabled = true;
-	m2.IndicesEnabled = true;
-	m2.UVsAttribute = 1;
-
-	m2.Vertices = m.Vertices;
-	m2.Indices = m.Indices;
-	m2.UVs = m.UVs;
-	m2.Create(TexArrLightShader.get());
-
-	m2.WorldMatrix = glm::translate(m2.WorldMatrix, glm::vec3(0, 16, 0));
-		
 	ColorShader = std::unique_ptr<Shader>(new Shader("Data//Shaders//color.v", "Data//Shaders//color.f"));
-	//coordsMesh.Create(ColorShader.get());
 	CoordsObj.Create(ColorShader.get());
 
 	MainCamera.SetSpeed(0.1f);
@@ -560,9 +445,6 @@ void Application::InitTestCode()
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D_ARRAY, TextureArray);
 }
 
 void Application::RenderTestCode()
@@ -577,7 +459,7 @@ void Application::RenderTestCode()
 	TexArrLightShader->bind(); // this should be done once and somewhere else
 
 	GLint modelLoc = glGetUniformLocation(TexArrLightShader->id(), "M"); //dont do that in main loop
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(m.WorldMatrix));
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(chunk.GetWorldMatrix()));
 
 	GLint lightPosLoc = glGetUniformLocation(TexArrLightShader->id(), "lightPos"); //dont do that in main loop
 
@@ -601,12 +483,8 @@ void Application::RenderTestCode()
 
 	glUniform3f(cusDirLightLoc, 0.5f, -1, 0.5f);
 
-
-	//m.Render(TexArrLightShader.get(), &MainCamera);
-
 	chunk.Render(&MainCamera);
-
-	TestTexture2->bind(0);
-
-	m2.Render(TextureShader.get(), &MainCamera);
+	chunk2.Render(&MainCamera);
+	chunk3.Render(&MainCamera);
+	chunk4.Render(&MainCamera);
 }
