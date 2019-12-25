@@ -100,6 +100,25 @@ void Mesh::Create(Shader* shader)
 		);
 	}
 
+	if (TexIDEnabled)
+	{
+		GLuint customBuffer;
+		glGenBuffers(1, &customBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, customBuffer);
+		glBufferData(GL_ARRAY_BUFFER, TexIDs.size() * sizeof(float), &TexIDs[0], GL_STATIC_DRAW);
+
+		glEnableVertexAttribArray(TexIDAttribute);
+		glBindBuffer(GL_ARRAY_BUFFER, customBuffer);
+		glVertexAttribPointer(
+			TexIDAttribute,                                // attribute. No particular reason for 1, but must match the layout in the shader.
+			1,                                // size
+			GL_FLOAT,                         // type
+			GL_FALSE,                         // normalized?
+			0,                                // stride
+			(void*)0                          // array buffer offset
+		);
+	}
+
 	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 

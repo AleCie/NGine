@@ -18,6 +18,8 @@
 #include "CoordsGizmo.h"
 #include "Texture.h"
 
+#include "Chunk.h"
+
 struct DestroyGLFWwnd {
 
 	void operator()(GLFWwindow* ptr) {
@@ -102,7 +104,7 @@ private:
 	std::unique_ptr<Shader> ColorShader;
 	std::unique_ptr<Shader> TextureShader;
 	std::unique_ptr<Shader> TextureArrayShader;
-	std::unique_ptr<Shader> TexArrLightShader;
+	std::shared_ptr<Shader> TexArrLightShader;
 
 	std::unique_ptr<Texture> TestTexture;
 	std::unique_ptr<Texture> TestTexture2;
@@ -111,4 +113,6 @@ private:
 	CoordsGizmo CoordsObj;
 
 	GLuint TextureArray;
+
+	Chunk chunk;
 };

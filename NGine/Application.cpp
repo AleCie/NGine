@@ -509,12 +509,14 @@ void Application::InitTestCode()
 	Sh = std::unique_ptr<Shader>(new Shader("test.v", "test.f"));
 	TextureShader = std::unique_ptr<Shader>(new Shader("Data//Shaders//texture.v", "Data//Shaders//texture.f"));
 	TextureArrayShader = std::unique_ptr<Shader>(new Shader("Data//Shaders//texturearray.v", "Data//Shaders//texturearray.f"));
-	TexArrLightShader = std::unique_ptr<Shader>(new Shader("Data//Shaders//texarrlight.v", "Data//Shaders//texarrlight.f"));
+	TexArrLightShader = std::shared_ptr<Shader>(new Shader("Data//Shaders//texarrlight.v", "Data//Shaders//texarrlight.f"));
 
 	//glUniform1i(0, 0);
 	TestTexture = std::unique_ptr<Texture>(new Texture("Data//Textures//dirt.jpg", GL_TEXTURE_2D));
 	TestTexture2 = std::unique_ptr<Texture>(new Texture("Data//Textures//stone.png", GL_TEXTURE_2D));
 	
+	chunk.Create(glm::vec3(0), TexArrLightShader);
+
 	//std::unique_ptr<Shader>(new Shader("test.v", "test.f"));
 	m.UVsEnabled = true;
 	m.IndicesEnabled = true;
@@ -600,7 +602,9 @@ void Application::RenderTestCode()
 	glUniform3f(cusDirLightLoc, 0.5f, -1, 0.5f);
 
 
-	m.Render(TexArrLightShader.get(), &MainCamera);
+	//m.Render(TexArrLightShader.get(), &MainCamera);
+
+	chunk.Render(&MainCamera);
 
 	TestTexture2->bind(0);
 

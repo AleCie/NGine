@@ -6,6 +6,8 @@ in vec3 Normal;
 
 in vec3 FragPos;  
 
+in float TexID;
+
 // Ouput data
 out vec4 color;
 
@@ -27,7 +29,7 @@ uniform vec3 cusDirLight;
 void main(){
 
 // texture pixel
-color = texture(myTextureSampler, vec3(UV.xy, 0));
+color = texture(myTextureSampler, vec3(UV.xy, TexID));
 
 // light
 vec3 norm = normalize(Normal);

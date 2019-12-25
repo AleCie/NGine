@@ -31,6 +31,8 @@ public:
 	std::vector<float> Colors;
 	std::vector<float> Normals;
 
+	std::vector<float> TexIDs;
+
 	glm::mat4 WorldMatrix = glm::mat4(1);
 	glm::mat4 MVP = glm::mat4(1);
 
@@ -44,9 +46,13 @@ public:
 	bool IndicesEnabled = true;
 	bool NormalsEnabled = false;
 
+	bool TexIDEnabled = false;
+
 	int ColorsAttribute = 1;
 	int UVsAttribute = 1;
 	int NormalsAttribute = 1;
+
+	int TexIDAttribute = 1;
 
 private:
 

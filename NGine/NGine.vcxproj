@@ -141,6 +141,7 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Chunk.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="CoordsGizmo.cpp" />
     <ClCompile Include="FastNoiseSIMD\FastNoiseSIMD.cpp" />
@@ -165,10 +166,12 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Chunk.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="CoordsGizmo.h" />
     <ClInclude Include="FastNoiseSIMD\FastNoiseSIMD.h" />
     <ClInclude Include="FastNoiseSIMD\FastNoiseSIMD_internal.h" />
+    <ClInclude Include="Filepath.h" />
     <ClInclude Include="glsl.h" />
     <ClInclude Include="imconfig.h" />
     <ClInclude Include="imgui.h" />

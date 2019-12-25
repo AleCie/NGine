@@ -49,6 +49,7 @@
     </ClCompile>
     <ClCompile Include="CoordsGizmo.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="Chunk.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -89,6 +90,8 @@
     </ClInclude>
     <ClInclude Include="CoordsGizmo.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="Chunk.h" />
+    <ClInclude Include="Filepath.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="FastNoiseSIMD">
