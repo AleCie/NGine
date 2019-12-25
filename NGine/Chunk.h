@@ -8,6 +8,9 @@
 #include "Texture.h"
 #include "Mesh.h"
 
+#include <thread>
+#include <future>
+
 class Camera;
 
 class Chunk
@@ -17,6 +20,7 @@ public:
 	~Chunk();
 
 	void Create(glm::vec3 position, std::shared_ptr<Shader> shader);
+	void Update(float dt);
 	void Render(Camera *cam);
 
 	void RebuildMesh();
@@ -28,10 +32,14 @@ public:
 	float NoiseTreshold = 0.0f;
 	float NoiseScale = 1.0f;
 
+	static int GlobalChunkVertexCount;
+
 private:
 
 	void CreateVoxelData();
 	void CreateMesh();
+	void CreateOpenGLMesh();
+	void CreateChunkThreadFunc(bool& result);
 
 	bool ShouldAddTop(int x, int y, int z);
 	bool ShouldAddBottom(int x, int y, int z);
@@ -55,4 +63,6 @@ private:
 	glm::vec3 Position = glm::vec3(0);
 
 	bool IsChunkEmpty = true;
+	bool DidThreadFinish = false;
+	bool WasMeshCreated = false;
 };

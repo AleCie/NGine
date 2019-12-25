@@ -50,6 +50,7 @@
     <ClCompile Include="CoordsGizmo.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Chunk.cpp" />
+    <ClCompile Include="ChunkManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -92,6 +93,7 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Chunk.h" />
     <ClInclude Include="Filepath.h" />
+    <ClInclude Include="ChunkManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="FastNoiseSIMD">

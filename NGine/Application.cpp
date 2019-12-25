@@ -109,7 +109,7 @@ void Application::RenderUI()
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::Begin("Terrain Gen");
+	/*ImGui::Begin("Terrain Gen");
 	ImGui::SliderFloat ("treshold", &noiseTreshold, -1.0f, 1.0f);
 	ImGui::SliderFloat("scale", &noiseScale, 0.0f, 100.0f);
 	if (ImGui::Button("generate"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
@@ -129,7 +129,7 @@ void Application::RenderUI()
 		chunk3.RebuildMesh();
 		chunk4.RebuildMesh();
 	}
-	ImGui::End();
+	ImGui::End();*/
 
 	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 	{
@@ -416,10 +416,12 @@ void Application::InitTestCode()
 	TestTexture = std::unique_ptr<Texture>(new Texture("Data//Textures//dirt.jpg", GL_TEXTURE_2D));
 	TestTexture2 = std::unique_ptr<Texture>(new Texture("Data//Textures//stone.png", GL_TEXTURE_2D));
 	
-	chunk.Create(glm::vec3(0), TexArrLightShader);
+	/*chunk.Create(glm::vec3(0), TexArrLightShader);
 	chunk2.Create(glm::vec3(16, 0, 0), TexArrLightShader);
 	chunk3.Create(glm::vec3(16, 0, 16), TexArrLightShader);
-	chunk4.Create(glm::vec3(0, 0, 16), TexArrLightShader);
+	chunk4.Create(glm::vec3(0, 0, 16), TexArrLightShader);*/
+	int size = 8;
+	ChMgr.CreateFixedWorld(size, size, size, TexArrLightShader);
 
 
 	ColorShader = std::unique_ptr<Shader>(new Shader("Data//Shaders//color.v", "Data//Shaders//color.f"));
@@ -459,7 +461,7 @@ void Application::RenderTestCode()
 	TexArrLightShader->bind(); // this should be done once and somewhere else
 
 	GLint modelLoc = glGetUniformLocation(TexArrLightShader->id(), "M"); //dont do that in main loop
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(chunk.GetWorldMatrix()));
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(glm::mat4(1)/*chunk.GetWorldMatrix()*/));
 
 	GLint lightPosLoc = glGetUniformLocation(TexArrLightShader->id(), "lightPos"); //dont do that in main loop
 
@@ -483,8 +485,10 @@ void Application::RenderTestCode()
 
 	glUniform3f(cusDirLightLoc, 0.5f, -1, 0.5f);
 
-	chunk.Render(&MainCamera);
+	ChMgr.Update(DeltaTime);
+	ChMgr.Render(&MainCamera);
+	/*chunk.Render(&MainCamera);
 	chunk2.Render(&MainCamera);
 	chunk3.Render(&MainCamera);
-	chunk4.Render(&MainCamera);
+	chunk4.Render(&MainCamera);*/
 }

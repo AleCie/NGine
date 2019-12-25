@@ -19,6 +19,7 @@
 #include "Texture.h"
 
 #include "Chunk.h"
+#include "ChunkManager.h"
 
 struct DestroyGLFWwnd {
 
@@ -110,4 +111,6 @@ private:
 	GLuint TextureArray;
 
 	Chunk chunk, chunk2, chunk3, chunk4;
+
+	ChunkManager ChMgr;
 };

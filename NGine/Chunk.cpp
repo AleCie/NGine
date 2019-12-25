@@ -1,6 +1,6 @@
 #include "Chunk.h"
 
-#include <string>
+#include <functional>
 
 #include "Camera.h"
 
@@ -9,12 +9,23 @@
 #include <glm/ext/matrix_transform.hpp>
 #include "FastNoiseSIMD/FastNoiseSIMD.h"
 
+int Chunk::GlobalChunkVertexCount = 0;
+
 Chunk::Chunk()
 {
+
 }
 
 Chunk::~Chunk()
 {
+}
+
+void Chunk::CreateChunkThreadFunc(bool &result)
+{
+	CreateVoxelData();
+	CreateMesh();
+
+	result = true;
 }
 
 void Chunk::Create(glm::vec3 position, std::shared_ptr<Shader> shader)
@@ -22,16 +33,41 @@ void Chunk::Create(glm::vec3 position, std::shared_ptr<Shader> shader)
 	Position = position;
 	ChunkShader = shader;
 
-	CreateVoxelData();
-	CreateMesh();
+	/*auto f = [&](bool &b) {
+		CreateVoxelData();
+		CreateMesh();
 
+		b = true;
+	};*/
+
+	//std::thread t1(&Chunk::CreateChunkThreadFunc, std::ref(DidThreadFinish));
+	//std::thread t1([this, &DidThreadFinish]() { this->CreateChunkThreadFunc(DidThreadFinish); });
+	//std::thread t1(std::mem_fun(&Chunk::CreateChunkThreadFunc), this, std::ref(DidThreadFinish)));
+
+	std::thread t1([this]() { this->CreateChunkThreadFunc(this->DidThreadFinish); });
+	t1.detach();
+
+	//t1.join();
+	
+	
 	
 	//ChunkShader = std::unique_ptr<Shader>(new Shader((fp::ShadersFolder + shaderName + fp::ExtVertex).c_str(), (fp::ShadersFolder + shaderName + fp::ExtFragment).c_str()));
 }
 
+void Chunk::Update(float dt)
+{
+	if (DidThreadFinish == true && WasMeshCreated == false)
+	{
+		CreateOpenGLMesh();
+
+		//std::cout << "Vertex count: " << Chunk::GlobalChunkVertexCount << std::endl;
+		WasMeshCreated = true;
+	}
+}
+
 void Chunk::Render(Camera *cam)
 {
-	if (IsChunkEmpty == false)
+	if (IsChunkEmpty == false && DidThreadFinish == true && WasMeshCreated == true)
 	{
 		ChunkMesh->Render(ChunkShader.get(), cam);
 	}
@@ -146,6 +182,13 @@ void Chunk::CreateMesh()
 			}
 		}
 	}
+
+	
+}
+
+void Chunk::CreateOpenGLMesh()
+{
+	GlobalChunkVertexCount += ChunkMesh->Vertices.size();
 
 	if (ChunkMesh->Vertices.size() > 0)
 	{
