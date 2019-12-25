@@ -24,6 +24,8 @@ public:
 	void SetDirection(glm::vec3 val);
 	void SetAngles(float horizontal, float vertical);
 
+	glm::vec3 GetPosition();
+
 private:
 	glm::mat4 ViewMatrix;
 	glm::mat4 ProjectionMatrix;

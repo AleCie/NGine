@@ -11,6 +11,8 @@ void CoordsGizmo::Create(Shader* shader)
 	CGMesh.SetMeshDrawMode(EMeshDrawMode::Lines);
 	CGMesh.SetMeshLayout(EMeshLayout::VertexOnly);
 	CGMesh.ColorsEnabled = true;
+	CGMesh.IndicesEnabled = false;
+	CGMesh.ColorsAttribute = 1;
 
 	CGMesh.Vertices.push_back(4); CGMesh.Vertices.push_back(0); CGMesh.Vertices.push_back(0);
 	CGMesh.Vertices.push_back(-4); CGMesh.Vertices.push_back(0); CGMesh.Vertices.push_back(0);

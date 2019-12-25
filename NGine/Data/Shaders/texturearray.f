@@ -11,7 +11,7 @@ uniform sampler2DArray myTextureSampler;
 
 void main(){
 
-color = texture(myTextureSampler, vec3(UV.xy, 1));
+color = texture(myTextureSampler, vec3(UV, 0));
 
 //	vec2 coord;
  //   coord.x = UV.x;

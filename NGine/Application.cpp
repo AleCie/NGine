@@ -5,6 +5,7 @@
 #include "Shader.h"
 #include "glsl.h"
 #include <glm/gtx/transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 using namespace std;
 Application::Application(int windowWidth, int windowHeight)
@@ -403,6 +404,11 @@ void Application::InitTestCode()
 				m.Indices.push_back(index + 1); m.Indices.push_back(index + 2); m.Indices.push_back(index + 3);
 				index += 4;
 
+				m.Normals.push_back(0); m.Normals.push_back(1); m.Normals.push_back(0);
+				m.Normals.push_back(0); m.Normals.push_back(1); m.Normals.push_back(0);
+				m.Normals.push_back(0); m.Normals.push_back(1); m.Normals.push_back(0);
+				m.Normals.push_back(0); m.Normals.push_back(1); m.Normals.push_back(0);
+
 				// bottom face
 				m.Vertices.push_back(1 + x); m.Vertices.push_back(y); m.Vertices.push_back(1 + z);
 				m.Vertices.push_back(1 + x); m.Vertices.push_back(y); m.Vertices.push_back(0 + z);
@@ -414,6 +420,11 @@ void Application::InitTestCode()
 				m.Indices.push_back(index + 3); m.Indices.push_back(index + 1); m.Indices.push_back(index + 0);
 				m.Indices.push_back(index + 3); m.Indices.push_back(index + 2); m.Indices.push_back(index + 1);
 				index += 4;
+
+				m.Normals.push_back(0); m.Normals.push_back(-1); m.Normals.push_back(0);
+				m.Normals.push_back(0); m.Normals.push_back(-1); m.Normals.push_back(0);
+				m.Normals.push_back(0); m.Normals.push_back(-1); m.Normals.push_back(0);
+				m.Normals.push_back(0); m.Normals.push_back(-1); m.Normals.push_back(0);
 
 				// back face
 				m.Vertices.push_back(1 + x); m.Vertices.push_back(1 + y); m.Vertices.push_back(z);
@@ -427,6 +438,11 @@ void Application::InitTestCode()
 				m.Indices.push_back(index + 1); m.Indices.push_back(index + 2); m.Indices.push_back(index + 3);
 				index += 4;
 
+				m.Normals.push_back(0); m.Normals.push_back(0); m.Normals.push_back(-1);
+				m.Normals.push_back(0); m.Normals.push_back(0); m.Normals.push_back(-1);
+				m.Normals.push_back(0); m.Normals.push_back(0); m.Normals.push_back(-1);
+				m.Normals.push_back(0); m.Normals.push_back(0); m.Normals.push_back(-1);
+
 				// front face
 				m.Vertices.push_back(1 + x); m.Vertices.push_back(1 + y); m.Vertices.push_back(z + 1);
 				m.Vertices.push_back(1 + x); m.Vertices.push_back(y); m.Vertices.push_back(z + 1);
@@ -438,6 +454,11 @@ void Application::InitTestCode()
 				m.Indices.push_back(index + 3); m.Indices.push_back(index + 1); m.Indices.push_back(index + 0);
 				m.Indices.push_back(index + 3); m.Indices.push_back(index + 2); m.Indices.push_back(index + 1);
 				index += 4;
+
+				m.Normals.push_back(0); m.Normals.push_back(0); m.Normals.push_back(1);
+				m.Normals.push_back(0); m.Normals.push_back(0); m.Normals.push_back(1);
+				m.Normals.push_back(0); m.Normals.push_back(0); m.Normals.push_back(1);
+				m.Normals.push_back(0); m.Normals.push_back(0); m.Normals.push_back(1);
 
 				// left face
 				m.Vertices.push_back(x); m.Vertices.push_back(1 + y); m.Vertices.push_back(z + 1);
@@ -451,6 +472,11 @@ void Application::InitTestCode()
 				m.Indices.push_back(index + 3); m.Indices.push_back(index + 2); m.Indices.push_back(index + 1);
 				index += 4;
 
+				m.Normals.push_back(-1); m.Normals.push_back(0); m.Normals.push_back(0);
+				m.Normals.push_back(-1); m.Normals.push_back(0); m.Normals.push_back(0);
+				m.Normals.push_back(-1); m.Normals.push_back(0); m.Normals.push_back(0);
+				m.Normals.push_back(-1); m.Normals.push_back(0); m.Normals.push_back(0);
+
 				// right face
 				m.Vertices.push_back(x + 1); m.Vertices.push_back(1 + y); m.Vertices.push_back(z + 1);
 				m.Vertices.push_back(x + 1); m.Vertices.push_back(y); m.Vertices.push_back(z + 1);
@@ -462,6 +488,11 @@ void Application::InitTestCode()
 				m.Indices.push_back(index + 0); m.Indices.push_back(index + 1); m.Indices.push_back(index + 3);
 				m.Indices.push_back(index + 1); m.Indices.push_back(index + 2); m.Indices.push_back(index + 3);
 				index += 4;
+
+				m.Normals.push_back(1); m.Normals.push_back(0); m.Normals.push_back(0);
+				m.Normals.push_back(1); m.Normals.push_back(0); m.Normals.push_back(0);
+				m.Normals.push_back(1); m.Normals.push_back(0); m.Normals.push_back(0);
+				m.Normals.push_back(1); m.Normals.push_back(0); m.Normals.push_back(0);
 
 				//uvs
 				for (int i = 0; i < 6; i++)
@@ -478,19 +509,28 @@ void Application::InitTestCode()
 	Sh = std::unique_ptr<Shader>(new Shader("test.v", "test.f"));
 	TextureShader = std::unique_ptr<Shader>(new Shader("Data//Shaders//texture.v", "Data//Shaders//texture.f"));
 	TextureArrayShader = std::unique_ptr<Shader>(new Shader("Data//Shaders//texturearray.v", "Data//Shaders//texturearray.f"));
+	TexArrLightShader = std::unique_ptr<Shader>(new Shader("Data//Shaders//texarrlight.v", "Data//Shaders//texarrlight.f"));
+
 	//glUniform1i(0, 0);
 	TestTexture = std::unique_ptr<Texture>(new Texture("Data//Textures//dirt.jpg", GL_TEXTURE_2D));
 	TestTexture2 = std::unique_ptr<Texture>(new Texture("Data//Textures//stone.png", GL_TEXTURE_2D));
 	
 	//std::unique_ptr<Shader>(new Shader("test.v", "test.f"));
 	m.UVsEnabled = true;
+	m.IndicesEnabled = true;
+	m.UVsAttribute = 1;
+	m.NormalsEnabled = true;
+	m.NormalsAttribute = 2;
 	m.Create(TextureArrayShader.get());
 
 	m2.UVsEnabled = true;
+	m2.IndicesEnabled = true;
+	m2.UVsAttribute = 1;
+
 	m2.Vertices = m.Vertices;
 	m2.Indices = m.Indices;
 	m2.UVs = m.UVs;
-	m2.Create(TextureShader.get());
+	m2.Create(TexArrLightShader.get());
 
 	m2.WorldMatrix = glm::translate(m2.WorldMatrix, glm::vec3(0, 16, 0));
 		
@@ -532,7 +572,35 @@ void Application::RenderTestCode()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D_ARRAY, TextureArray);
 
-	m.Render(TextureArrayShader.get(), &MainCamera);
+	TexArrLightShader->bind(); // this should be done once and somewhere else
+
+	GLint modelLoc = glGetUniformLocation(TexArrLightShader->id(), "M"); //dont do that in main loop
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(m.WorldMatrix));
+
+	GLint lightPosLoc = glGetUniformLocation(TexArrLightShader->id(), "lightPos"); //dont do that in main loop
+
+	GLint objectColorLoc = glGetUniformLocation(TexArrLightShader->id(), "objectColor"); //dont do that in main loop
+	GLint lightColorLoc = glGetUniformLocation(TexArrLightShader->id(), "lightColor"); //dont do that in main loop
+
+	GLint ambientStrenghtLoc = glGetUniformLocation(TexArrLightShader->id(), "ambientStrenght"); //dont do that in main loop
+	GLint camPosLoc = glGetUniformLocation(TexArrLightShader->id(), "camPos"); //dont do that in main loop
+
+	GLint cusDirLightLoc = glGetUniformLocation(TexArrLightShader->id(), "cusDirLight"); //dont do that in main loop
+
+
+	glUniform3f(lightPosLoc, -5.0f, 5.0f, 5.0f);
+
+	glUniform3f(objectColorLoc, 0.0f, 1.0f, 0.0f); //since it doesnt change could be done outside main loop
+	glUniform3f(lightColorLoc, 1.0f, 1.0f, 1.0f); //since it doesnt change could be done outside main loop
+
+	glUniform1f(ambientStrenghtLoc, 0.5f); //since it doesnt change could be done outside main loop
+
+	glUniform3f(camPosLoc, MainCamera.GetPosition().x, MainCamera.GetPosition().y, MainCamera.GetPosition().z);
+
+	glUniform3f(cusDirLightLoc, 0.5f, -1, 0.5f);
+
+
+	m.Render(TexArrLightShader.get(), &MainCamera);
 
 	TestTexture2->bind(0);
 

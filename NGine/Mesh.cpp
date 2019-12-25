@@ -25,7 +25,7 @@ void Mesh::Create(Shader* shader)
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 
-	if (MeshLayout == EMeshLayout::VertexElement)
+	if (IndicesEnabled)
 	{
 		glGenBuffers(1, &EBO);
 	}
@@ -35,7 +35,7 @@ void Mesh::Create(Shader* shader)
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, Vertices.size() * sizeof(float), &Vertices[0], GL_STATIC_DRAW);
 
-	if (MeshLayout == EMeshLayout::VertexElement)
+	if (IndicesEnabled)
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, Indices.size() * sizeof(int), &Indices[0], GL_STATIC_DRAW);
@@ -50,10 +50,10 @@ void Mesh::Create(Shader* shader)
 		glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
 		glBufferData(GL_ARRAY_BUFFER, Colors.size() * sizeof(float), &Colors[0], GL_STATIC_DRAW);
 
-		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(ColorsAttribute);
 		glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
 		glVertexAttribPointer(
-			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
+			ColorsAttribute,                                // attribute. No particular reason for 1, but must match the layout in the shader.
 			3,                                // size
 			GL_FLOAT,                         // type
 			GL_FALSE,                         // normalized?
@@ -69,11 +69,30 @@ void Mesh::Create(Shader* shader)
 		glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
 		glBufferData(GL_ARRAY_BUFFER, UVs.size() * sizeof(float), &UVs[0], GL_STATIC_DRAW);
 
-		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(UVsAttribute);
 		glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
 		glVertexAttribPointer(
-			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
+			UVsAttribute,                                // attribute. No particular reason for 1, but must match the layout in the shader.
 			2,                                // size
+			GL_FLOAT,                         // type
+			GL_FALSE,                         // normalized?
+			0,                                // stride
+			(void*)0                          // array buffer offset
+		);
+	}
+
+	if (NormalsEnabled)
+	{
+		GLuint normalsbuffer;
+		glGenBuffers(1, &normalsbuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, normalsbuffer);
+		glBufferData(GL_ARRAY_BUFFER, Normals.size() * sizeof(float), &Normals[0], GL_STATIC_DRAW);
+
+		glEnableVertexAttribArray(NormalsAttribute);
+		glBindBuffer(GL_ARRAY_BUFFER, normalsbuffer);
+		glVertexAttribPointer(
+			NormalsAttribute,                                // attribute. No particular reason for 1, but must match the layout in the shader.
+			3,                                // size
 			GL_FLOAT,                         // type
 			GL_FALSE,                         // normalized?
 			0,                                // stride
@@ -111,11 +130,11 @@ void Mesh::Render(Shader* shader, Camera* camera)
 	glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
 		//glDrawArrays(GL_TRIANGLES, 0, 6);
 
-	if (MeshDrawMode == EMeshDrawMode::Triangles && MeshLayout == EMeshLayout::VertexElement)
+	if (MeshDrawMode == EMeshDrawMode::Triangles && IndicesEnabled)
 	{
 		glDrawElements(GL_TRIANGLES, Indices.size(), GL_UNSIGNED_INT, 0);
 	}
-	if (MeshDrawMode == EMeshDrawMode::Lines && MeshLayout == EMeshLayout::VertexOnly)
+	if (MeshDrawMode == EMeshDrawMode::Lines && IndicesEnabled == false)
 	{
 		//glDrawElements(GL_TRIANGLES, Indices.size(), GL_UNSIGNED_INT, 0);
 		glDrawArrays(GL_LINES, 0, Vertices.size());

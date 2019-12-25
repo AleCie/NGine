@@ -29,6 +29,7 @@ public:
 	std::vector<unsigned int> Indices;
 	std::vector<float> UVs;
 	std::vector<float> Colors;
+	std::vector<float> Normals;
 
 	glm::mat4 WorldMatrix = glm::mat4(1);
 	glm::mat4 MVP = glm::mat4(1);
@@ -40,6 +41,12 @@ public:
 
 	bool ColorsEnabled = false;
 	bool UVsEnabled = false;
+	bool IndicesEnabled = true;
+	bool NormalsEnabled = false;
+
+	int ColorsAttribute = 1;
+	int UVsAttribute = 1;
+	int NormalsAttribute = 1;
 
 private:
 

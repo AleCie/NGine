@@ -102,6 +102,8 @@ private:
 	std::unique_ptr<Shader> ColorShader;
 	std::unique_ptr<Shader> TextureShader;
 	std::unique_ptr<Shader> TextureArrayShader;
+	std::unique_ptr<Shader> TexArrLightShader;
+
 	std::unique_ptr<Texture> TestTexture;
 	std::unique_ptr<Texture> TestTexture2;
 	//Mesh coordsMesh;

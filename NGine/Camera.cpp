@@ -146,3 +146,8 @@ void Camera::SetAngles(float horizontal, float vertical)
 	HorizontalAngle = horizontal;
 	VerticalAngle = vertical;
 }
+
+glm::vec3 Camera::GetPosition()
+{
+	return Position;
+}
