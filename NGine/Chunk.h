@@ -20,11 +20,12 @@ public:
 	~Chunk();
 
 	void Create(glm::vec3 position, std::shared_ptr<Shader> shader);
-	void Update(float dt);
+	void Update(Camera* cam, float dt);
 	void Render(Camera *cam);
 
 	void RebuildMesh();
 
+	glm::vec3 GetPosition();
 	glm::mat4 GetWorldMatrix();
 
 	static const int ChunkSize = 16;
@@ -34,12 +35,14 @@ public:
 
 	static int GlobalChunkVertexCount;
 
+	bool ShouldBeDeleted = false;
+
 private:
 
 	void CreateVoxelData();
 	void CreateMesh();
 	void CreateOpenGLMesh();
-	void CreateChunkThreadFunc(bool& result);
+	void CreateChunkThreadFunc(bool& result, std::atomic<bool>& shouldTerminate, std::atomic<bool>& wasTerminated);
 
 	bool ShouldAddTop(int x, int y, int z);
 	bool ShouldAddBottom(int x, int y, int z);
@@ -65,4 +68,8 @@ private:
 	bool IsChunkEmpty = true;
 	bool DidThreadFinish = false;
 	bool WasMeshCreated = false;
+
+	std::thread ChunkThread;
+	std::atomic<bool> ShouldTerminateThread = false;
+	std::atomic<bool> WasThreadTerminated = false;
 };

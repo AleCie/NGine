@@ -485,7 +485,7 @@ void Application::RenderTestCode()
 
 	glUniform3f(cusDirLightLoc, 0.5f, -1, 0.5f);
 
-	ChMgr.Update(DeltaTime);
+	ChMgr.Update(&MainCamera, DeltaTime);
 	ChMgr.Render(&MainCamera);
 	/*chunk.Render(&MainCamera);
 	chunk2.Render(&MainCamera);

@@ -3,11 +3,14 @@
 #include <functional>
 
 #include "Camera.h"
+#include "ChunkManager.h"
 
 #include "Filepath.h"
 
 #include <glm/ext/matrix_transform.hpp>
 #include "FastNoiseSIMD/FastNoiseSIMD.h"
+
+//#include <pthread.h>
 
 int Chunk::GlobalChunkVertexCount = 0;
 
@@ -18,13 +21,30 @@ Chunk::Chunk()
 
 Chunk::~Chunk()
 {
+	//pthread_cancel(ChunkThread);
 }
 
-void Chunk::CreateChunkThreadFunc(bool &result)
+void Chunk::CreateChunkThreadFunc(bool &result, std::atomic<bool>& shouldTerminate, std::atomic<bool>& wasTerminated)
 {
+	if (ShouldTerminateThread == true)
+	{
+		wasTerminated = true;
+		return;
+	}
 	CreateVoxelData();
+	if (ShouldTerminateThread == true)
+	{
+		wasTerminated = true;
+		return;
+	}
 	CreateMesh();
+	if (ShouldTerminateThread == true)
+	{
+		wasTerminated = true;
+		return;
+	}
 
+	wasTerminated = true;
 	result = true;
 }
 
@@ -44,8 +64,8 @@ void Chunk::Create(glm::vec3 position, std::shared_ptr<Shader> shader)
 	//std::thread t1([this, &DidThreadFinish]() { this->CreateChunkThreadFunc(DidThreadFinish); });
 	//std::thread t1(std::mem_fun(&Chunk::CreateChunkThreadFunc), this, std::ref(DidThreadFinish)));
 
-	std::thread t1([this]() { this->CreateChunkThreadFunc(this->DidThreadFinish); });
-	t1.detach();
+	ChunkThread = std::thread([this]() { this->CreateChunkThreadFunc(this->DidThreadFinish, this->ShouldTerminateThread, this->WasThreadTerminated); });
+	ChunkThread.detach();
 
 	//t1.join();
 	
@@ -54,7 +74,7 @@ void Chunk::Create(glm::vec3 position, std::shared_ptr<Shader> shader)
 	//ChunkShader = std::unique_ptr<Shader>(new Shader((fp::ShadersFolder + shaderName + fp::ExtVertex).c_str(), (fp::ShadersFolder + shaderName + fp::ExtFragment).c_str()));
 }
 
-void Chunk::Update(float dt)
+void Chunk::Update(Camera *cam, float dt)
 {
 	if (DidThreadFinish == true && WasMeshCreated == false)
 	{
@@ -63,6 +83,38 @@ void Chunk::Update(float dt)
 		//std::cout << "Vertex count: " << Chunk::GlobalChunkVertexCount << std::endl;
 		WasMeshCreated = true;
 	}
+
+	// get distance
+	glm::vec3 distance = Position - cam->GetPosition();
+	bool shouldDelete = false;
+	if (distance.x > ChunkManager::ChunkGenRadius * Chunk::ChunkSize)
+	{
+		shouldDelete = true;
+	}
+	if (distance.y > ChunkManager::ChunkGenRadius * Chunk::ChunkSize)
+	{
+		shouldDelete = true;
+	}
+	if (distance.z > ChunkManager::ChunkGenRadius * Chunk::ChunkSize)
+	{
+		shouldDelete = true;
+	}
+
+	// erase if too big (first terminate thread
+	if (shouldDelete)
+	{
+		//ShouldBeDeleted = true;
+		ShouldTerminateThread = true;
+		//ChunkThread.join();
+		
+	}
+
+	if (WasThreadTerminated == true && shouldDelete)
+	{
+		ShouldBeDeleted = true;
+	}
+
+
 }
 
 void Chunk::Render(Camera *cam)
@@ -88,6 +140,11 @@ void Chunk::RebuildMesh()
 	CreateMesh();
 
 
+}
+
+glm::vec3 Chunk::GetPosition()
+{
+	return Position;
 }
 
 glm::mat4 Chunk::GetWorldMatrix()
