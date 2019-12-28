@@ -23,7 +23,7 @@ public:
 	void Update(Camera* cam, float dt);
 	void Render(Camera *cam);
 
-	void RebuildMesh();
+	//void RebuildMesh();
 
 	glm::vec3 GetPosition();
 	glm::mat4 GetWorldMatrix();
@@ -37,7 +37,21 @@ public:
 
 	bool ShouldBeDeleted = false;
 
+	int Data[ChunkSize][ChunkSize][ChunkSize];
+
+	std::weak_ptr<Chunk> TopChunk;
+	std::weak_ptr<Chunk> BottomChunk;
+	std::weak_ptr<Chunk> LeftChunk;
+	std::weak_ptr<Chunk> RightChunk;
+	std::weak_ptr<Chunk> FrontChunk;
+	std::weak_ptr<Chunk> BackChunk;
+
+	bool ShouldRebuild = false;
+
 private:
+
+	void Create();
+	void CleanMesh();
 
 	void CreateVoxelData();
 	void CreateMesh();
@@ -58,7 +72,9 @@ private:
 	void AddLeftFace(int x, int y, int z, int& idx);
 	void AddRightFace(int x, int y, int z, int& idx);
 
-	int Data[ChunkSize][ChunkSize][ChunkSize];
+	
+
+	
 
 	std::unique_ptr<Mesh> ChunkMesh;
 	std::shared_ptr<Shader> ChunkShader;

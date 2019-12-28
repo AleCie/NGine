@@ -8,7 +8,7 @@
 #include <chrono>
 #include <iostream>
 
-int ChunkManager::ChunkGenRadius = 3;
+int ChunkManager::ChunkGenRadius = 5;
 
 ChunkManager::ChunkManager()
 {
@@ -51,18 +51,6 @@ void ChunkManager::CreateFixedWorld(int width, int height, int depth, std::share
 
 void ChunkManager::Update(Camera* camera, float dt)
 {
-	/*for (int i = 0; i < Width * Height * Depth; i++)
-	{
-		Chunks[i].Update(dt);
-	}*/
-
-	//c++11
-	/*for (auto const& p : ChunkMap)
-	{
-		auto pair = p.second;
-	}*/
-	//c++17
-
 	//figure out chunk where camera is
 	glm::vec3 camChunkPos = camera->GetPosition() / glm::vec3(Chunk::ChunkSize, Chunk::ChunkSize, Chunk::ChunkSize);
 	camChunkPos = glm::vec3(floorf(camChunkPos.x) * Chunk::ChunkSize, floorf(camChunkPos.y) * Chunk::ChunkSize, floorf(camChunkPos.z) * Chunk::ChunkSize);
@@ -77,17 +65,70 @@ void ChunkManager::Update(Camera* camera, float dt)
 				// check if chunk exists
 				glm::vec3 posToCheck = camChunkPos + glm::vec3(x * Chunk::ChunkSize, y * Chunk::ChunkSize, z * Chunk::ChunkSize);
 				
-				/*if (ChunkMap.count(posToCheck))
-				{
-
-				}*/
 				
 				auto result = ChunkMap.find(posToCheck);
 			
 				if (result == ChunkMap.end()) // if doesn't exist (iterator looped through everything)
 				{
 					//create chunk
-					std::unique_ptr<Chunk> newChunk = std::unique_ptr<Chunk>(new Chunk());
+					std::shared_ptr<Chunk> newChunk = std::shared_ptr<Chunk>(new Chunk());
+
+					// check surrounding chunks;
+					auto topResult = ChunkMap.find(posToCheck + glm::vec3(0, Chunk::ChunkSize, 0));
+					if (topResult != ChunkMap.end())
+					{
+						newChunk->TopChunk = topResult->second;
+
+						topResult->second->BottomChunk = newChunk;
+						topResult->second->ShouldRebuild = true;
+					}
+
+					auto bottomResult = ChunkMap.find(posToCheck + glm::vec3(0, -Chunk::ChunkSize, 0));
+					if (bottomResult != ChunkMap.end())
+					{
+						newChunk->BottomChunk = bottomResult->second;
+
+						bottomResult->second->TopChunk = newChunk;
+						bottomResult->second->ShouldRebuild = true;
+					}
+
+					auto leftResult = ChunkMap.find(posToCheck + glm::vec3(-Chunk::ChunkSize, 0, 0));
+					if (leftResult != ChunkMap.end())
+					{
+						newChunk->LeftChunk = leftResult->second;
+
+						leftResult->second->RightChunk = newChunk;
+						leftResult->second->ShouldRebuild = true;
+					}
+
+					auto rightResult = ChunkMap.find(posToCheck + glm::vec3(Chunk::ChunkSize, 0, 0));
+					if (rightResult != ChunkMap.end())
+					{
+						newChunk->RightChunk = rightResult->second;
+
+						rightResult->second->LeftChunk = newChunk;
+						rightResult->second->ShouldRebuild = true;
+					}
+					
+					auto frontResult = ChunkMap.find(posToCheck + glm::vec3(0, 0, Chunk::ChunkSize));
+					if (frontResult != ChunkMap.end())
+					{
+						newChunk->FrontChunk = frontResult->second;
+
+						frontResult->second->BackChunk = newChunk;
+						frontResult->second->ShouldRebuild = true;
+					}
+
+					auto backResult = ChunkMap.find(posToCheck + glm::vec3(0, 0, -Chunk::ChunkSize));
+					if (backResult != ChunkMap.end())
+					{
+						newChunk->BackChunk = backResult->second;
+
+						backResult->second->FrontChunk = newChunk;
+						backResult->second->ShouldRebuild = true;
+					}
+
+					//create and assign
 					newChunk->Create(posToCheck, ChunkShader);
 					//ChunkMap.insert(std::make_pair<glm::vec3, Chunk>(posToCheck, newChunk));
 					ChunkMap[posToCheck] = std::move(newChunk);
@@ -98,16 +139,9 @@ void ChunkManager::Update(Camera* camera, float dt)
 
 	for (auto it = ChunkMap.begin(); it != ChunkMap.end(); )
 	{
-		/*if (it->second != nullptr)
-		{
-			it->second->Update(camera, dt);// ->Update(dt);
-		}*/
-
 		if(it->second != nullptr)
 		if (it->second->ShouldBeDeleted)
 		{
-			//ChunkMap.erase(it->second->GetPosition());
-
 			it = ChunkMap.erase(it);
 		}
 		else
@@ -116,16 +150,6 @@ void ChunkManager::Update(Camera* camera, float dt)
 			++it;
 		}
 	}
-	/*for (auto &[key, val] : ChunkMap)
-	{
-		
-		val->Update(camera, dt);// ->Update(dt);
-		if (val->ShouldBeDeleted)
-		{
-			ChunkMap.erase(val->GetPosition());
-			break;
-		}
-	}*/
 }
 
 void ChunkManager::Render(Camera* camera)
@@ -134,8 +158,4 @@ void ChunkManager::Render(Camera* camera)
 	{
 		val->Render(camera);
 	}
-	/*for (int i = 0; i < Width * Height * Depth; i++)
-	{
-		Chunks[i].Render(camera);
-	}*/
 }

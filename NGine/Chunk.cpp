@@ -100,6 +100,7 @@ void Chunk::Update(Camera *cam, float dt)
 		shouldDelete = true;
 	}
 
+	// flags for object deletion
 	// erase if too big (first terminate thread
 	if (shouldDelete)
 	{
@@ -114,6 +115,23 @@ void Chunk::Update(Camera *cam, float dt)
 		ShouldBeDeleted = true;
 	}
 
+	//flags for mesh rebuild
+
+	if (ShouldRebuild)
+	{
+		if (WasThreadTerminated == false || DidThreadFinish == false)
+		{
+			//ShouldTerminateThread = true;
+		}
+		else
+		{
+			CleanMesh();
+			Create();
+
+			ShouldRebuild = false;
+		}
+	}
+
 
 }
 
@@ -125,7 +143,7 @@ void Chunk::Render(Camera *cam)
 	}
 }
 
-void Chunk::RebuildMesh()
+/*void Chunk::RebuildMesh()
 {
 	IsChunkEmpty = true;
 
@@ -140,7 +158,7 @@ void Chunk::RebuildMesh()
 	CreateMesh();
 
 
-}
+}*/
 
 glm::vec3 Chunk::GetPosition()
 {
@@ -150,6 +168,24 @@ glm::vec3 Chunk::GetPosition()
 glm::mat4 Chunk::GetWorldMatrix()
 {
 	return ChunkMesh->WorldMatrix;
+}
+
+void Chunk::Create()
+{
+	ChunkThread = std::thread([this]() { this->CreateChunkThreadFunc(this->DidThreadFinish, this->ShouldTerminateThread, this->WasThreadTerminated); });
+	ChunkThread.detach();
+}
+
+void Chunk::CleanMesh()
+{
+	IsChunkEmpty = true;
+
+	ChunkMesh->Vertices.clear();
+	ChunkMesh->Indices.clear();
+	ChunkMesh->Normals.clear();
+	ChunkMesh->UVs.clear();
+
+	ChunkMesh.reset();
 }
 
 void Chunk::CreateVoxelData()
@@ -266,8 +302,21 @@ bool Chunk::ShouldAddTop(int x, int y, int z)
 	if (y + 1 >= ChunkSize)
 	{
 		// out of bounds, decide if should display quad, or fetch data from child chunk if exists
-
-		return true; // for now, display quad if out of bounds
+		if (auto tch = TopChunk.lock()) //top chunk exist, check value from there
+		{
+			if (tch->Data[x][0][z] >= 0) // voxel in top chunk is full, dont display
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		else
+		{
+			return true;
+		}
 	}
 
 	if (Data[x][y + 1][z] >= 0) // if Data is greater than zero, means there is a voxel there, so should not add that face
@@ -284,7 +333,22 @@ bool Chunk::ShouldAddBottom(int x, int y, int z)
 {
 	if (y - 1 < 0)
 	{
-		return true;
+		// out of bounds, decide if should display quad, or fetch data from child chunk if exists
+		if (auto bch = BottomChunk.lock()) //top chunk exist, check value from there
+		{
+			if (bch->Data[x][Chunk::ChunkSize - 1][z] >= 0) // voxel in top chunk is full, dont display
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		else
+		{
+			return true;
+		}
 	}
 
 	if (Data[x][y - 1][z] >= 0) // if Data is greater than zero, means there is a voxel to display
@@ -301,7 +365,22 @@ bool Chunk::ShouldAddLeft(int x, int y, int z)
 {
 	if (x - 1 < 0)
 	{
-		return true;
+		// out of bounds, decide if should display quad, or fetch data from child chunk if exists
+		if (auto lch = LeftChunk.lock()) //top chunk exist, check value from there
+		{
+			if (lch->Data[Chunk::ChunkSize - 1][y][z] >= 0) // voxel in top chunk is full, dont display
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		else
+		{
+			return true;
+		}
 	}
 
 	if (Data[x - 1][y][z] >= 0) // if Data is greater than zero, means there is a voxel to display
@@ -318,7 +397,22 @@ bool Chunk::ShouldAddRight(int x, int y, int z)
 {
 	if (x + 1 >= ChunkSize)
 	{
-		return true;
+		// out of bounds, decide if should display quad, or fetch data from child chunk if exists
+		if (auto rch = RightChunk.lock()) //top chunk exist, check value from there
+		{
+			if (rch->Data[0][y][z] >= 0) // voxel in top chunk is full, dont display
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		else
+		{
+			return true;
+		}
 	}
 
 	if (Data[x + 1][y][z] >= 0) // if Data is greater than zero, means there is a voxel to display
@@ -335,7 +429,22 @@ bool Chunk::ShouldAddFront(int x, int y, int z)
 {
 	if (z + 1 >= ChunkSize)
 	{
-		return true;
+		// out of bounds, decide if should display quad, or fetch data from child chunk if exists
+		if (auto fch = FrontChunk.lock()) //top chunk exist, check value from there
+		{
+			if (fch->Data[x][y][Chunk::ChunkSize - 1] >= 0) // voxel in top chunk is full, dont display
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		else
+		{
+			return true;
+		}
 	}
 
 	if (Data[x][y][z + 1] >= 0) // if Data is greater than zero, means there is a voxel to display
@@ -352,7 +461,22 @@ bool Chunk::ShouldAddBack(int x, int y, int z)
 {
 	if (z - 1 < 0)
 	{
-		return true;
+		// out of bounds, decide if should display quad, or fetch data from child chunk if exists
+		if (auto bch = BackChunk.lock()) //top chunk exist, check value from there
+		{
+			if (bch->Data[x][y][0] >= 0) // voxel in top chunk is full, dont display
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		else
+		{
+			return true;
+		}
 	}
 
 	if (Data[x][y][z - 1] >= 0) // if Data is greater than zero, means there is a voxel to display

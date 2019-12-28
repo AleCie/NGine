@@ -46,6 +46,6 @@ private:
 	Chunk* Chunks;
 	std::shared_ptr<Shader> ChunkShader;
 
-	std::unordered_map<glm::vec3, std::unique_ptr<Chunk>> ChunkMap;
+	std::unordered_map<glm::vec3, std::shared_ptr<Chunk>> ChunkMap;
 
 };
